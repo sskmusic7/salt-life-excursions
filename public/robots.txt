@@ -1,0 +1,19 @@
+# Salt Life - Turks & Caicos Excursions
+# robots.txt
+
+User-agent: *
+Allow: /
+
+# CRITICAL: Block review content from being indexed
+# This is required by Viator Partner API terms
+Disallow: /api/viator/reviews
+Disallow: /api/reviews
+
+# Block admin and internal pages
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://saltlifetc.com/sitemap.xml
+
+

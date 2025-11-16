@@ -1,0 +1,313 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          UserRole  @default(CUSTOMER)
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  provider      Provider?
+  bookings      Booking[]
+  reviews       Review[]
+  wishlist      Wishlist[]
+}
+
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+model Provider {
+  id                String            @id @default(cuid())
+  userId            String            @unique
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  businessName      String
+  description       String?
+  contactPerson     String?
+  phone             String
+  address           String?
+  logo              String?
+  
+  // Verification
+  isVerified        Boolean           @default(false)
+  isApproved        Boolean           @default(false)
+  businessLicense   String?
+  insurance         String?
+  taxId             String?
+  
+  // Bank Details
+  bankName          String?
+  accountHolder     String?
+  accountNumber     String?
+  routingNumber     String?
+  swiftCode         String?
+  
+  // Stats
+  totalEarnings     Float             @default(0)
+  avgRating         Float             @default(0)
+  totalReviews      Int               @default(0)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Relations
+  activities        Activity[]
+  bookings          Booking[]
+}
+
+model Activity {
+  id              String            @id @default(cuid())
+  providerId      String
+  provider        Provider          @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  title           String
+  slug            String            @unique
+  description     String
+  category        String
+  location        String
+  price           Float
+  currency        String            @default("USD")
+  duration        String
+  capacity        Int
+  
+  // Media
+  images          String[]
+  videos          String[]
+  
+  // Status
+  status          ActivityStatus    @default(PENDING)
+  featured        Boolean           @default(false)
+  
+  // Stats
+  views           Int               @default(0)
+  totalBookings   Int               @default(0)
+  avgRating       Float             @default(0)
+  totalReviews    Int               @default(0)
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  // Relations
+  bookings        Booking[]
+  reviews         Review[]
+  availability    Availability[]
+  wishlist        Wishlist[]
+}
+
+enum ActivityStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  REJECTED
+}
+
+model Availability {
+  id          String    @id @default(cuid())
+  activityId  String
+  activity    Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  
+  date        DateTime
+  slots       Int
+  booked      Int       @default(0)
+  isAvailable Boolean   @default(true)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([activityId, date])
+}
+
+model Booking {
+  id              String          @id @default(cuid())
+  bookingNumber   String          @unique
+  
+  userId          String
+  user            User            @relation(fields: [userId], references: [id])
+  
+  activityId      String
+  activity        Activity        @relation(fields: [activityId], references: [id])
+  
+  providerId      String
+  provider        Provider        @relation(fields: [providerId], references: [id])
+  
+  // Booking Details
+  bookingDate     DateTime
+  bookingTime     String
+  guests          Int
+  
+  // Pricing
+  totalAmount     Float
+  commission      Float           // 30% admin commission
+  providerEarning Float
+  
+  // Customer Info
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  specialRequests String?
+  
+  // Status
+  status          BookingStatus   @default(PENDING)
+  paymentStatus   PaymentStatus   @default(PENDING)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  
+  // Relations
+  payment         Payment?
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  bookingId       String        @unique
+  booking         Booking       @relation(fields: [bookingId], references: [id])
+  
+  amount          Float
+  currency        String        @default("USD")
+  paymentMethod   String
+  stripePaymentId String?
+  
+  status          PaymentStatus @default(PENDING)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  
+  activityId  String
+  activity    Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  
+  rating      Int       // 1-5
+  comment     String?
+  images      String[]
+  
+  isVerified  Boolean   @default(false)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, activityId])
+}
+
+model Wishlist {
+  id          String    @id @default(cuid())
+  
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  activityId  String
+  activity    Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  
+  @@unique([userId, activityId])
+}
+
+model Package {
+  id              String    @id @default(cuid())
+  
+  name            String
+  slug            String    @unique
+  description     String
+  
+  originalPrice   Float
+  discountedPrice Float
+  savings         Float
+  
+  category        String
+  duration        String
+  guests          String
+  
+  activities      String[]  // Activity IDs
+  images          String[]
+  
+  featured        Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  
+  author      String
+  category    String
+  tags        String[]
+  
+  published   Boolean   @default(false)
+  views       Int       @default(0)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+}
+
+model Newsletter {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  isActive    Boolean   @default(true)
+  
+  createdAt   DateTime  @default(now())
+}
+
+model Settings {
+  id                  String    @id @default(cuid())
+  key                 String    @unique
+  value               String
+  
+  updatedAt           DateTime  @updatedAt
+}
+
+
+
+
+
+
+
