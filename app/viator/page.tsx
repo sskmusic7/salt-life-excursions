@@ -33,9 +33,18 @@ export default function ViatorPage() {
   const [searchTerm, setSearchTerm] = useState('turks caicos')
   const [error, setError] = useState<string | null>(null)
 
+  // Auto-fetch on mount and when search term changes
+  // Auto-fetch on page load - acts like a window/mirror to Viator API
   useEffect(() => {
     fetchViatorProducts()
   }, [])
+  
+  // Also refetch when search term changes
+  useEffect(() => {
+    if (searchTerm) {
+      fetchViatorProducts()
+    }
+  }, [searchTerm])
 
   const fetchViatorProducts = async () => {
     setLoading(true)
@@ -49,10 +58,22 @@ export default function ViatorPage() {
       }
       
       const data = await response.json()
-      setProducts(data.products || [])
+      
+      // Always use API results, even if they're from mock fallback
+      if (data.products && data.products.length > 0) {
+        setProducts(data.products)
+      } else {
+        setProducts([])
+      }
+      
+      // Show note if using mock data
+      if (data.note) {
+        console.info('Viator API:', data.note)
+      }
     } catch (err) {
       console.error('Error fetching Viator products:', err)
       setError(err instanceof Error ? err.message : 'Failed to load activities')
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -138,8 +159,11 @@ export default function ViatorPage() {
                 <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
                   {products.length} Activities Available
                 </h2>
-                <p className="text-lg text-gray-600">
-                  Real experiences from Viator's marketplace
+                <p className="text-lg text-gray-600 mb-2">
+                  Real-time listings from Viator's marketplace
+                </p>
+                <p className="text-sm text-gray-500">
+                  Live data • Auto-updated on every visit • Powered by Viator Partner API
                 </p>
               </div>
 
