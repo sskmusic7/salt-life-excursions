@@ -180,7 +180,7 @@ export default function BlogPage() {
 
           {/* Pagination Placeholder */}
           <div className="mt-16 text-center">
-            <p className="text-gray-500 mb-4">Showing {blogPosts.length} article{blogPosts.length !== 1 ? 's' : ''}</p>
+            <p className="text-gray-500 mb-4">Showing {blogPosts.length} of {blogPosts.length} article{blogPosts.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
       </section>
