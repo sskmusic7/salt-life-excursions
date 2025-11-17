@@ -5,9 +5,12 @@ import { Loader2, CheckCircle2, AlertCircle, Image, Search, Eye, RefreshCw } fro
 
 interface AuditResult {
   id: string
-  type: 'blog' | 'excursion' | 'activity'
+  type: 'blog' | 'excursion' | 'activity' | 'homepage' | 'package' | 'testimonial' | 'page' | 'viator'
   title: string
   currentImage: string
+  page?: string
+  component?: string
+  context?: string
   suggestedImage?: string
   suggestedImageSource?: 'google' | 'unsplash' | 'ai-generated'
   alternatives?: {
@@ -38,7 +41,7 @@ export default function VisualAuditPage() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<AuditResult[]>([])
   const [summary, setSummary] = useState<AuditSummary | null>(null)
-  const [auditType, setAuditType] = useState<'full' | 'blog' | 'excursions'>('full')
+  const [auditType, setAuditType] = useState<'full' | 'blog' | 'excursions' | 'sitewide'>('full')
   const [showPreview, setShowPreview] = useState<string | null>(null)
 
   const runAudit = async (applyCorrections: boolean = false) => {
@@ -109,7 +112,8 @@ export default function VisualAuditPage() {
                 disabled={loading}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500"
               >
-                <option value="full">Full Audit (All Images)</option>
+                <option value="full">Full Site-Wide Audit (All Images)</option>
+                <option value="sitewide">Site-Wide Scan (Comprehensive)</option>
                 <option value="blog">Blog Posts Only</option>
                 <option value="excursions">Excursions Only</option>
               </select>
@@ -228,16 +232,39 @@ export default function VisualAuditPage() {
                     <div className="grid md:grid-cols-3 gap-6">
                       {/* Info */}
                       <div className="md:col-span-1">
-                        <div className="mb-4">
+                        <div className="mb-4 flex flex-wrap gap-2">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                             result.type === 'blog' 
                               ? 'bg-blue-100 text-blue-700'
-                              : 'bg-purple-100 text-purple-700'
+                              : result.type === 'excursion'
+                              ? 'bg-purple-100 text-purple-700'
+                              : result.type === 'homepage'
+                              ? 'bg-green-100 text-green-700'
+                              : result.type === 'package'
+                              ? 'bg-orange-100 text-orange-700'
+                              : result.type === 'testimonial'
+                              ? 'bg-pink-100 text-pink-700'
+                              : result.type === 'page'
+                              ? 'bg-gray-100 text-gray-700'
+                              : 'bg-yellow-100 text-yellow-700'
                           }`}>
                             {result.type.toUpperCase()}
                           </span>
+                          {result.page && (
+                            <span className="inline-block px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
+                              {result.page}
+                            </span>
+                          )}
+                          {result.component && (
+                            <span className="inline-block px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
+                              {result.component}
+                            </span>
+                          )}
                         </div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">{result.title}</h3>
+                        {result.context && (
+                          <p className="text-xs text-gray-500 mb-2">{result.context}</p>
+                        )}
                         {result.matchScore !== undefined && (
                           <div className="mb-2">
                             <span className="text-sm text-gray-600">Match Score: </span>

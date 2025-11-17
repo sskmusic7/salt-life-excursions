@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     let summary: any = {}
 
     if (type === 'full') {
-      // Full audit of all images
+      // Full site-wide audit of ALL images across the entire site
       const auditSummary = await auditor.runFullAudit()
       results = auditSummary.results
       summary = {
@@ -40,6 +40,34 @@ export async function POST(request: NextRequest) {
       }
     } else if (type === 'excursions') {
       results = await auditor.auditExcursionImages()
+      summary = {
+        totalAudited: results.length,
+        needsCorrection: results.filter(r => r.suggestedImage).length,
+      }
+    } else if (type === 'sitewide') {
+      // Explicit site-wide scan
+      const { SiteImageScanner } = await import('@/lib/visual-auditor/site-scanner')
+      const scanner = new SiteImageScanner()
+      const siteImages = scanner.scanEntireSite()
+      
+      const auditResults: any[] = []
+      for (const siteImage of siteImages) {
+        const result = await auditor.auditImage(
+          siteImage.id,
+          siteImage.type as any,
+          siteImage.title,
+          siteImage.imageUrl,
+          siteImage.context,
+          siteImage.component,
+          siteImage.page,
+          siteImage.component,
+          siteImage.context
+        )
+        auditResults.push(result)
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+      
+      results = auditResults
       summary = {
         totalAudited: results.length,
         needsCorrection: results.filter(r => r.suggestedImage).length,
