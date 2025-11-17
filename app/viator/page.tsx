@@ -33,18 +33,12 @@ export default function ViatorPage() {
   const [searchTerm, setSearchTerm] = useState('turks caicos')
   const [error, setError] = useState<string | null>(null)
 
-  // Auto-fetch on mount and when search term changes
   // Auto-fetch on page load - acts like a window/mirror to Viator API
+  // Fetches real-time listings from Viator backend on every visit
   useEffect(() => {
     fetchViatorProducts()
-  }, [])
-  
-  // Also refetch when search term changes
-  useEffect(() => {
-    if (searchTerm) {
-      fetchViatorProducts()
-    }
-  }, [searchTerm])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run on mount
 
   const fetchViatorProducts = async () => {
     setLoading(true)
@@ -81,8 +75,20 @@ export default function ViatorPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    fetchViatorProducts()
+    fetchViatorProducts() // Refetch when user manually searches
   }
+  
+  // Auto-refresh when search term changes (debounced)
+  useEffect(() => {
+    if (!searchTerm) return
+    
+    const timer = setTimeout(() => {
+      fetchViatorProducts()
+    }, 500) // Debounce for 500ms
+    
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]) // Only when search term changes
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-ocean-50 to-white">
