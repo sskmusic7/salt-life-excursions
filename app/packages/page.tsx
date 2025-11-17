@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Check, TrendingUp, Users, Clock } from 'lucide-react'
+import { Check, TrendingUp, Users, Clock, DollarSign } from 'lucide-react'
 
 export default function PackagesPage() {
   const packages = [

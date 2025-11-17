@@ -106,7 +106,9 @@ export function ProvidersManagement() {
                       <div className="flex items-center space-x-2">
                         <p className="font-semibold text-gray-900">{provider.businessName}</p>
                         {provider.verified && (
-                          <Shield size={16} className="text-green-600" title="Verified" />
+                          <span title="Verified">
+                            <Shield size={16} className="text-green-600" aria-label="Verified" />
+                          </span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600">{provider.contactPerson}</p>

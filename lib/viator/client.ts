@@ -48,7 +48,7 @@ export class ViatorAPIClient {
     const requestHeaders: Record<string, string> = {
       'exp-api-key': this.config.apiKey,
       'Accept': `application/json;version=${this.config.apiVersion}`,
-      'Accept-Language': language || this.config.defaultLanguage,
+      'Accept-Language': language || this.config.defaultLanguage || 'en-US',
       'Accept-Encoding': 'gzip',
       ...headers,
     }
