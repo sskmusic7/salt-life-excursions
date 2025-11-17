@@ -15,12 +15,13 @@ For Netlify deployment, you have two options for blog posts:
    - Go to your Netlify dashboard
    - Navigate to: Site Settings → Environment Variables
    - Add these variables:
-     ```
-     GEMINI_API_KEY=AIzaSyDGqidJewYR1oKRs7tGTChRiIs-nd75GcY
-     GOOGLE_SEARCH_API_KEY=AIzaSyDGqidJewYR1oKRs7tGTChRiIs-nd75GcY
-     GOOGLE_SEARCH_ENGINE_ID=f7ef4caee432a4127
-     UNSPLASH_ACCESS_KEY=your-unsplash-key
-     ```
+    ```
+    GEMINI_API_KEY=<YOUR_GEMINI_API_KEY>
+    GOOGLE_SEARCH_API_KEY=<YOUR_GOOGLE_CUSTOM_SEARCH_API_KEY>
+    GOOGLE_SEARCH_ENGINE_ID=f7ef4caee432a4127
+    UNSPLASH_ACCESS_KEY=<YOUR_UNSPLASH_ACCESS_KEY>
+    ```
+   > ⚠️ **Security Reminder:** Never check real keys into Git. Store them only in Netlify’s env vars (or your local `.env.local`, which is gitignored).
 
 2. **Generate Blog Posts Locally:**
    ```bash
