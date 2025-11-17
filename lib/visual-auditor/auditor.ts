@@ -467,13 +467,15 @@ export class VisualAuditor {
             const isGallery = result.id.includes('-gallery-')
             if (isGallery) {
               // Extract excursion ID and gallery index
-              // Format: "excursion-{id}-gallery-{index}"
-              const match = result.id.match(/^excursion-(\d+)-gallery-(\d+)$/)
-              if (match) {
-                const excursionId = match[1]
-                const galleryIndex = parseInt(match[2]) || 0
+              // Format: "excursion-gallery-{exc_id}-{index}" or "{exc_id}-gallery-{index}"
+              // Where exc_id can be like "exc_1761778618000_ua20g95rc"
+              const galleryMatch = result.id.match(/excursion-gallery-(.+?)-(\d+)$|^excursion-gallery-exc_(\d+_\w+)-(\d+)$/)
+              if (galleryMatch) {
+                // Handle both formats: excursion-gallery-exc_xxx-0 or excursion-gallery-xxx-0
+                const excursionId = galleryMatch[1] || `exc_${galleryMatch[3]}`
+                const galleryIndex = parseInt(galleryMatch[2] || galleryMatch[4]) || 0
                 
-                const excursion = excursions.find((e: any) => e.id.toString() === excursionId)
+                const excursion = excursions.find((e: any) => e.id === excursionId || e.id.toString() === excursionId)
                 if (excursion && excursion.images && excursion.images[galleryIndex]) {
                   if (typeof excursion.images[galleryIndex] === 'string') {
                     excursion.images[galleryIndex] = result.suggestedImage
@@ -481,14 +483,15 @@ export class VisualAuditor {
                     excursion.images[galleryIndex].url = result.suggestedImage
                   }
                   corrected++
+                  console.log(`✅ Updated gallery image for excursion ${excursionId}, index ${galleryIndex}`)
                 }
               }
             } else {
-              // Cover image - format: "excursion-{id}-cover" or just "{id}-cover"
-              const match = result.id.match(/^excursion-(\d+)-cover$|^(\d+)-cover$/)
-              if (match) {
-                const excursionId = match[1] || match[2]
-                const excursion = excursions.find((e: any) => e.id.toString() === excursionId)
+              // Cover image - format: "{exc_id}-cover" or "excursion-cover-{exc_id}"
+              const coverMatch = result.id.match(/^excursion-cover-(.+)$|^(.+)-cover$/)
+              if (coverMatch) {
+                const excursionId = coverMatch[1] || coverMatch[2]
+                const excursion = excursions.find((e: any) => e.id === excursionId || e.id.toString() === excursionId)
                 if (excursion) {
                   excursion.coverImage = result.suggestedImage
                   if (excursion.images && excursion.images.length > 0) {
@@ -499,10 +502,11 @@ export class VisualAuditor {
                     }
                   }
                   corrected++
+                  console.log(`✅ Updated cover image for excursion ${excursionId}`)
                 }
               } else {
-                // Try direct ID match (legacy format)
-                const excursion = excursions.find((e: any) => e.id.toString() === result.id)
+                // Try direct ID match
+                const excursion = excursions.find((e: any) => e.id === result.id || e.id.toString() === result.id)
                 if (excursion) {
                   excursion.coverImage = result.suggestedImage
                   if (excursion.images && excursion.images.length > 0) {
@@ -513,6 +517,7 @@ export class VisualAuditor {
                     }
                   }
                   corrected++
+                  console.log(`✅ Updated cover image for excursion ${excursion.id}`)
                 }
               }
             }
