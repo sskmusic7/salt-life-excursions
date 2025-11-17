@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     let posts = []
 
     if (type === 'bulk') {
-      // Generate all blog posts from the blog page
+      // Generate all blog posts from the blog page (24 total)
       const defaultBlogPosts = [
         {
           title: '10 Best Beaches in Turks & Caicos You Must Visit',
@@ -55,6 +55,114 @@ export async function POST(request: NextRequest) {
           category: 'Sustainability',
           author: 'James Wilson',
           topic: 'sustainable tourism eco-friendly Turks Caicos'
+        },
+        {
+          title: 'Island Hopping: Exploring All 40 Islands of Turks & Caicos',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'island hopping Grand Turk Salt Cay North Caicos'
+        },
+        {
+          title: 'Best Time to Visit Turks & Caicos: Weather & Seasons Guide',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'best time to visit weather seasons hurricane season'
+        },
+        {
+          title: 'Diving in Turks & Caicos: Top Dive Sites for All Levels',
+          category: 'Activities',
+          author: 'Emily Rodriguez',
+          topic: 'diving dive sites Wall reef wreck diving'
+        },
+        {
+          title: 'Romantic Getaways: Honeymoon Destinations in TCI',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'romantic honeymoon couples resorts private beaches'
+        },
+        {
+          title: 'Nightlife in Providenciales: Bars, Clubs & Entertainment',
+          category: 'Food & Drink',
+          author: 'David Thompson',
+          topic: 'nightlife bars clubs restaurants entertainment'
+        },
+        {
+          title: 'Wildlife Encounters: Meeting the Locals of TCI',
+          category: 'Activities',
+          author: 'Emily Rodriguez',
+          topic: 'wildlife iguanas flamingos whales dolphins turtles'
+        },
+        {
+          title: 'Shopping Guide: Where to Find the Best Souvenirs',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'shopping souvenirs local crafts markets'
+        },
+        {
+          title: 'Adventure Sports: Kiteboarding, Windsurfing & More',
+          category: 'Activities',
+          author: 'Emily Rodriguez',
+          topic: 'kiteboarding windsurfing paddleboarding watersports'
+        },
+        {
+          title: 'Luxury Resorts: Top-Rated Accommodations in TCI',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'luxury resorts all-inclusive Grace Bay hotels'
+        },
+        {
+          title: 'Day Trips from Providenciales: Must-Visit Destinations',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'day trips excursions boat tours island tours'
+        },
+        {
+          title: 'Photography Guide: Capturing the Perfect Caribbean Shot',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'photography tips sunset sunrise beaches wildlife'
+        },
+        {
+          title: 'Health & Safety: Medical Care & Emergency Services',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'health safety medical care hospitals emergency'
+        },
+        {
+          title: 'Cultural Experiences: History, Music & Local Traditions',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'culture history music traditions local people'
+        },
+        {
+          title: 'Budget Travel: How to Experience TCI Without Breaking the Bank',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'budget travel cheap accommodations affordable activities'
+        },
+        {
+          title: 'Sailing & Yachting: Charter Your Perfect Caribbean Adventure',
+          category: 'Activities',
+          author: 'Emily Rodriguez',
+          topic: 'sailing yachting boat charters private cruises'
+        },
+        {
+          title: 'Wedding Destinations: Planning Your TCI Island Wedding',
+          category: 'Travel Guide',
+          author: 'Sarah Johnson',
+          topic: 'weddings destination wedding venues planning'
+        },
+        {
+          title: 'Weather Patterns: Understanding TCI Climate Throughout the Year',
+          category: 'Travel Tips',
+          author: 'Michael Chen',
+          topic: 'weather climate seasons temperature rainfall'
+        },
+        {
+          title: 'Conservation Efforts: How TCI Protects Its Marine Environment',
+          category: 'Sustainability',
+          author: 'James Wilson',
+          topic: 'conservation marine protection coral reef preservation'
         }
       ]
 

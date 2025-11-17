@@ -150,36 +150,98 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
  * Format blog content from markdown/text to HTML
  */
 function formatBlogContent(content: string): string {
-  // Convert markdown-style headers to HTML
+  // Convert markdown-style headers to HTML first (before paragraph processing)
   let html = content
     .replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 class="text-3xl font-bold text-gray-900 mt-10 mb-6">$1</h2>')
     .replace(/^# (.*$)/gim, '<h1 class="text-4xl font-bold text-gray-900 mt-12 mb-8">$1</h1>')
   
-  // Convert paragraphs
-  html = html.split('\n\n').map(paragraph => {
-    if (paragraph.trim() && !paragraph.match(/^<[h|u|o|l]/i)) {
-      return `<p class="text-gray-700 mb-6 leading-relaxed">${paragraph.trim()}</p>`
-    }
-    return paragraph
-  }).join('\n\n')
+  // Convert markdown links FIRST (before processing paragraphs)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-ocean-600 hover:text-ocean-700 underline font-medium">$1</a>')
   
-  // Convert bullet lists
+  // Convert plain URLs (http/https) that aren't already in anchor tags
+  // Use a function to check if URL is already inside an anchor tag
+  html = html.replace(/(https?:\/\/[^\s<>"']+)/gi, (match, offset, string) => {
+    // Check if this URL is already inside an anchor tag
+    const before = string.substring(0, offset)
+    
+    // Check if we're inside an <a> tag
+    const lastOpenTag = before.lastIndexOf('<a')
+    const lastCloseTag = before.lastIndexOf('</a>')
+    
+    // If there's an open <a> tag after the last closing </a>, we're inside an anchor
+    if (lastOpenTag > lastCloseTag) {
+      return match // Already in an anchor tag, don't convert
+    }
+    
+    // Check if there's a > before the URL (might be inside another tag)
+    const lastAngleBefore = before.lastIndexOf('>')
+    if (lastAngleBefore > lastCloseTag && before.substring(lastAngleBefore).includes('<')) {
+      return match // Inside another tag, don't convert
+    }
+    
+    return `<a href="${match}" target="_blank" rel="noopener noreferrer" class="text-ocean-600 hover:text-ocean-700 underline font-medium">${match}</a>`
+  })
+  
+  // Convert paragraphs (process line by line to preserve structure)
+  const lines = html.split('\n')
+  let processedLines: string[] = []
+  let currentParagraph: string[] = []
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+    
+    // Skip empty lines
+    if (!line) {
+      if (currentParagraph.length > 0) {
+        processedLines.push(`<p class="text-gray-700 mb-6 leading-relaxed">${currentParagraph.join(' ')}</p>`)
+        currentParagraph = []
+      }
+      continue
+    }
+    
+    // If it's already an HTML tag (header, list, etc.), add it directly
+    if (line.match(/^<[h|u|o|l]/i)) {
+      if (currentParagraph.length > 0) {
+        processedLines.push(`<p class="text-gray-700 mb-6 leading-relaxed">${currentParagraph.join(' ')}</p>`)
+        currentParagraph = []
+      }
+      processedLines.push(line)
+      continue
+    }
+    
+    // Collect paragraph text
+    currentParagraph.push(line)
+  }
+  
+  // Add any remaining paragraph
+  if (currentParagraph.length > 0) {
+    processedLines.push(`<p class="text-gray-700 mb-6 leading-relaxed">${currentParagraph.join(' ')}</p>`)
+  }
+  
+  html = processedLines.join('\n')
+  
+  // Convert bullet lists (markdown style)
   html = html.replace(/^\* (.*$)/gim, '<li class="ml-6 mb-2 text-gray-700">$1</li>')
-  html = html.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-disc mb-6 space-y-2">$&</ul>')
+  html = html.replace(/(<li class="ml-6 mb-2 text-gray-700">.*<\/li>\n?)+/g, (match) => {
+    return `<ul class="list-disc mb-6 space-y-2 pl-6">${match}</ul>`
+  })
   
   // Convert numbered lists
   html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-6 mb-2 text-gray-700">$1</li>')
-  html = html.replace(/(<li.*<\/li>\n?)+/g, '<ol class="list-decimal mb-6 space-y-2">$&</ol>')
+  html = html.replace(/(<li class="ml-6 mb-2 text-gray-700">.*<\/li>\n?)+/g, (match, offset, string) => {
+    // Only if it's not already wrapped in a ul
+    if (!string.substring(Math.max(0, offset - 10), offset + match.length).includes('<ul')) {
+      return `<ol class="list-decimal mb-6 space-y-2 pl-6">${match}</ol>`
+    }
+    return match
+  })
   
-  // Convert bold
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+  // Convert bold (after links to avoid conflicts)
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
   
-  // Convert italic
-  html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-  
-  // Convert links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-ocean-600 hover:text-ocean-700 underline">$1</a>')
+  // Convert italic (but not bold asterisks)
+  html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em class="italic">$1</em>')
   
   return html
 }
