@@ -59,6 +59,22 @@ export class GeminiClient {
   }
 
   /**
+   * Generate image using Gemini/Imagen
+   * Note: Image generation is not directly supported by the Generative AI SDK
+   * This method is a placeholder for future Vertex AI Imagen integration
+   * Currently, Unsplash is used as the primary image source
+   */
+  async generateImage(prompt: string): Promise<string | null> {
+    // TODO: Implement image generation using Google Vertex AI Imagen API
+    // The Generative AI SDK (@google/generative-ai) doesn't support image generation
+    // You would need to use @google-cloud/aiplatform or Vertex AI REST API directly
+    // For now, this returns null and the blog generator uses Unsplash
+    
+    console.warn('Image generation via Gemini requires Vertex AI Imagen API (not supported by Generative AI SDK). Using Unsplash fallback.')
+    return null
+  }
+
+  /**
    * Generate content with retries
    */
   async generateWithRetry<T>(

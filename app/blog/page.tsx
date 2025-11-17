@@ -5,13 +5,16 @@
 
 import Link from 'next/link'
 import { Calendar, Clock, ArrowRight } from 'lucide-react'
+import { readFileSync, existsSync } from 'fs'
+import { join } from 'path'
 
 export const metadata = {
   title: 'Blog - Salt Life Excursions',
   description: 'Travel tips, guides, and stories from Turks & Caicos Islands.',
 }
 
-const blogPosts = [
+// Fallback blog posts if generated posts don't exist
+const fallbackBlogPosts = [
   {
     id: 1,
     title: '10 Best Beaches in Turks & Caicos You Must Visit',
@@ -74,7 +77,26 @@ const blogPosts = [
   },
 ]
 
+function getBlogPosts() {
+  const dataDir = join(process.cwd(), 'data')
+  const filePath = join(dataDir, 'generated-blog-posts.json')
+  
+  if (!existsSync(filePath)) {
+    return fallbackBlogPosts
+  }
+
+  try {
+    const fileContent = readFileSync(filePath, 'utf-8')
+    const posts = JSON.parse(fileContent)
+    return Array.isArray(posts) && posts.length > 0 ? posts : fallbackBlogPosts
+  } catch (error) {
+    console.error('Failed to load blog posts:', error)
+    return fallbackBlogPosts
+  }
+}
+
 export default function BlogPage() {
+  const blogPosts = getBlogPosts()
   return (
     <div className="min-h-screen bg-gradient-to-b from-ocean-50 to-white">
       {/* Hero Section */}
@@ -158,24 +180,7 @@ export default function BlogPage() {
 
           {/* Pagination Placeholder */}
           <div className="mt-16 text-center">
-            <p className="text-gray-500 mb-4">Showing 6 of 24 articles</p>
-            <div className="flex items-center justify-center gap-2">
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
-                Previous
-              </button>
-              <button className="px-4 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700">
-                1
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                2
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                3
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                Next
-              </button>
-            </div>
+            <p className="text-gray-500 mb-4">Showing {blogPosts.length} article{blogPosts.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
       </section>
