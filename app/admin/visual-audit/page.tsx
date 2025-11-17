@@ -9,10 +9,22 @@ interface AuditResult {
   title: string
   currentImage: string
   suggestedImage?: string
+  suggestedImageSource?: 'google' | 'unsplash' | 'ai-generated'
+  alternatives?: {
+    google?: string
+    unsplash?: string
+    aiGenerated?: string
+  }
   matchScore?: number
   keywords: string[]
   issue?: string
   labels?: string[]
+  postProcessingStatus?: {
+    googleChecked: boolean
+    unsplashChecked: boolean
+    aiGenerated: boolean
+    finalSource: 'google' | 'unsplash' | 'ai-generated' | 'none'
+  }
 }
 
 interface AuditSummary {
@@ -288,7 +300,7 @@ export default function VisualAuditPage() {
                         )}
                       </div>
 
-                      {/* Suggested Image */}
+                      {/* Suggested Image & Alternatives */}
                       {needsFix && result.suggestedImage && (
                         <div className="md:col-span-1">
                           <div className="relative h-48 rounded-lg overflow-hidden border-2 border-yellow-400">
@@ -311,8 +323,68 @@ export default function VisualAuditPage() {
                             Suggested Replacement
                           </p>
                           <p className="text-xs text-gray-500 mt-1 text-center">
-                            From Google Image Search
+                            From {result.suggestedImageSource === 'google' ? 'Google Image Search' :
+                                  result.suggestedImageSource === 'unsplash' ? 'Unsplash' :
+                                  result.suggestedImageSource === 'ai-generated' ? 'AI Generated' : 'Unknown'}
                           </p>
+                          
+                          {/* Post-processing Status */}
+                          {result.postProcessingStatus && (
+                            <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                              <p className="text-gray-600 font-semibold mb-1">Post-processing:</p>
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-gray-500">Google:</span>
+                                  <span className={result.postProcessingStatus.googleChecked ? 'text-green-600' : 'text-gray-400'}>
+                                    {result.postProcessingStatus.googleChecked ? '✓' : '—'}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-gray-500">Unsplash:</span>
+                                  <span className={result.postProcessingStatus.unsplashChecked ? 'text-green-600' : 'text-gray-400'}>
+                                    {result.postProcessingStatus.unsplashChecked ? '✓' : '—'}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-gray-500">AI Generated:</span>
+                                  <span className={result.postProcessingStatus.aiGenerated ? 'text-green-600' : 'text-gray-400'}>
+                                    {result.postProcessingStatus.aiGenerated ? '✓' : '—'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Show all alternatives if available */}
+                          {result.alternatives && (result.alternatives.unsplash || result.alternatives.aiGenerated) && (
+                            <div className="mt-3 p-2 bg-blue-50 rounded text-xs">
+                              <p className="text-blue-800 font-semibold mb-2">All Alternatives:</p>
+                              {result.alternatives.google && result.suggestedImageSource !== 'google' && (
+                                <button
+                                  onClick={() => setShowPreview(result.alternatives!.google!)}
+                                  className="w-full mb-1 text-left px-2 py-1 bg-white rounded hover:bg-blue-100 text-blue-700"
+                                >
+                                  🔍 Google Image Search
+                                </button>
+                              )}
+                              {result.alternatives.unsplash && result.suggestedImageSource !== 'unsplash' && (
+                                <button
+                                  onClick={() => setShowPreview(result.alternatives!.unsplash!)}
+                                  className="w-full mb-1 text-left px-2 py-1 bg-white rounded hover:bg-blue-100 text-blue-700"
+                                >
+                                  📷 Unsplash
+                                </button>
+                              )}
+                              {result.alternatives.aiGenerated && result.suggestedImageSource !== 'ai-generated' && (
+                                <button
+                                  onClick={() => setShowPreview(result.alternatives!.aiGenerated!)}
+                                  className="w-full text-left px-2 py-1 bg-white rounded hover:bg-blue-100 text-blue-700"
+                                >
+                                  🤖 AI Generated
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
 

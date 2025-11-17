@@ -6,12 +6,48 @@ The Visual Auditing System uses **Google Image Search** and **Google Vision API*
 
 ## How It Works
 
+### Main Audit Process:
 1. **Image Extraction**: Scans all blog posts and excursions to extract images and metadata
 2. **Keyword Extraction**: Analyzes titles, content, and categories to identify relevant keywords
 3. **Google Image Search**: Searches Google Images using extracted keywords (e.g., "yacht Turks and Caicos", "beach Grace Bay")
 4. **Vision API Analysis** (Optional): Uses Google Vision API to detect labels in images (OCR/object detection)
 5. **Matching**: Compares current images with Google Image Search results
-6. **Correction**: Suggests and optionally replaces mismatched images with accurate ones
+
+### Post-Processing Pipeline (3-Tier System):
+For images that need correction, the system automatically checks multiple sources in order:
+
+**Tier 1: Google Image Search** ✅ (Always checked)
+- Uses Custom Search API with Image Search enabled
+- Finds publicly available images matching the topic
+- Best for finding real photos of specific locations/activities
+
+**Tier 2: Unsplash** 📷 (Checked if Google fails)
+- Searches your configured Unsplash account
+- High-quality, free-to-use stock photography
+- Perfect for travel/tourism content
+- **Always checked** for alternatives even if Google finds results
+
+**Tier 3: AI Generation** 🤖 (Only if both fail)
+- Uses Google Vertex AI Imagen API (imagegeneration@006 model)
+- Gemini-enhanced prompts for better results
+- Generates custom images matching your exact requirements
+- Fallback for unique or niche content
+
+6. **Correction**: Suggests and optionally replaces mismatched images with the best available alternative
+7. **Alternatives Display**: Shows all available alternatives from each tier so you can choose
+
+### Post-Processing Flow:
+```
+Image needs correction?
+  ↓
+✓ Check Google Image Search → Found? → Suggest
+  ↓ Not found
+✓ Check Unsplash → Found? → Suggest
+  ↓ Not found
+✓ Generate with AI (Imagen/Gemini) → Generated? → Suggest
+  ↓ All failed
+Use fallback placeholder
+```
 
 ## Setup
 
@@ -42,7 +78,33 @@ GOOGLE_VISION_API_KEY="your-vision-api-key"
 
 **Note**: You can use the same API key as Google Search if they're in the same project, or create a separate one.
 
-### 3. Environment Variables
+### 3. Enable Unsplash API (Required for Post-Processing)
+
+1. Sign up at [Unsplash Developers](https://unsplash.com/developers)
+2. Create a new application
+3. Get your Access Key
+4. Add to your `.env.local`:
+
+```env
+UNSPLASH_ACCESS_KEY="your-unsplash-access-key"
+```
+
+### 4. Enable Google Vertex AI Imagen (Optional for AI Generation)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable the **Vertex AI API** and **Imagen API**
+3. Create credentials (API Key or Service Account)
+4. Add to your `.env.local`:
+
+```env
+GOOGLE_CLOUD_PROJECT_ID="your-project-id"
+GOOGLE_CLOUD_LOCATION="us-central1"
+GOOGLE_CLOUD_ACCESS_TOKEN="your-access-token"
+```
+
+**Note**: You can use Application Default Credentials instead of an access token. For production, use Service Account keys.
+
+### 5. Environment Variables Summary
 
 Add to your `.env.local`:
 
@@ -50,9 +112,15 @@ Add to your `.env.local`:
 # Required
 GOOGLE_SEARCH_API_KEY="your-google-search-api-key"
 GOOGLE_SEARCH_ENGINE_ID="your-custom-search-engine-id"
+UNSPLASH_ACCESS_KEY="your-unsplash-access-key"
 
 # Optional (for enhanced image analysis)
 GOOGLE_VISION_API_KEY="your-google-vision-api-key"
+
+# Optional (for AI image generation)
+GOOGLE_CLOUD_PROJECT_ID="your-google-cloud-project-id"
+GOOGLE_CLOUD_LOCATION="us-central1"
+GOOGLE_CLOUD_ACCESS_TOKEN="your-access-token"
 ```
 
 ## Usage
