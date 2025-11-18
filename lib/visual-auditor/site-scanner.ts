@@ -23,16 +23,72 @@ export class SiteImageScanner {
   private scanHomepageImages(): SiteImage[] {
     const images: SiteImage[] = []
     
-    // Hero background
-    images.push({
-      id: 'homepage-hero',
-      type: 'homepage',
-      title: 'Homepage Hero Background',
-      imageUrl: 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070',
-      page: '/',
-      component: 'Hero',
-      context: 'Black family enjoying beach vacation in Turks & Caicos'
-    })
+    // Load site images config
+    try {
+      const dataDir = join(process.cwd(), 'data')
+      const configPath = join(dataDir, 'site-images-config.json')
+      if (existsSync(configPath)) {
+        const config = JSON.parse(readFileSync(configPath, 'utf-8'))
+        
+        // Hero background
+        images.push({
+          id: 'hero-background',
+          type: 'homepage',
+          title: 'Homepage Hero Background',
+          imageUrl: config.homepage?.hero?.backgroundImage || 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070',
+          page: '/',
+          component: 'Hero',
+          context: 'Black family enjoying beach vacation in Turks & Caicos'
+        })
+        
+        // Testimonials from config
+        if (config.testimonials) {
+          config.testimonials.forEach((testimonial: any, index: number) => {
+            images.push({
+              id: `testimonial-${index}`,
+              type: 'testimonial',
+              title: `Testimonial: ${testimonial.name}`,
+              imageUrl: testimonial.image,
+              page: '/',
+              component: 'Testimonials',
+              context: `Customer testimonial avatar`
+            })
+          })
+        }
+        
+        // Packages from config
+        if (config.packages) {
+          config.packages.forEach((pkg: any) => {
+            images.push({
+              id: `package-${pkg.id}`,
+              type: 'package',
+              title: `Package: ${pkg.name}`,
+              imageUrl: pkg.image,
+              page: '/',
+              component: 'PackageDeals',
+              context: `Homepage package deal`
+            })
+          })
+        }
+        
+        // Location Showcase from config
+        if (config.locationShowcase) {
+          config.locationShowcase.forEach((activity: any) => {
+            images.push({
+              id: `location-${activity.title.replace(/\s+/g, '-').toLowerCase()}`,
+              type: 'activity',
+              title: activity.title,
+              imageUrl: activity.image,
+              page: '/',
+              component: 'LocationShowcase',
+              context: `Location showcase activity`
+            })
+          })
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load site-images-config.json:', error)
+    }
 
     // Featured Activities (from generated excursions)
     try {
@@ -56,68 +112,6 @@ export class SiteImageScanner {
       console.warn('Failed to scan featured activities:', error)
     }
 
-    // Testimonials avatars
-    const testimonialImages = [
-      { name: 'Sarah Mitchell', url: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=200' },
-      { name: 'James Rodriguez', url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200' },
-      { name: 'Emily Chen', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200' },
-      { name: 'Michael Thompson', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' },
-      { name: 'Lisa Anderson', url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200' },
-      { name: 'David Kim', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' },
-    ]
-    
-    testimonialImages.forEach((testimonial, index) => {
-      images.push({
-        id: `testimonial-${index + 1}`,
-        type: 'testimonial',
-        title: `Testimonial: ${testimonial.name}`,
-        imageUrl: testimonial.url,
-        page: '/',
-        component: 'Testimonials',
-        context: `Customer testimonial avatar`
-      })
-    })
-
-    // Package Deals
-    const packageImages = [
-      { name: 'Adventure Seeker', url: 'https://images.unsplash.com/photo-1610484826922-3f84c2efcc89?q=80&w=2070' },
-      { name: 'Luxury Escape', url: 'https://images.unsplash.com/photo-1579762715118-a6f1d4b434b9?q=80&w=2070' },
-      { name: 'Family Fun Pack', url: 'https://images.unsplash.com/photo-1605733160314-4f3d462f9529?q=80&w=2070' },
-    ]
-    
-    packageImages.forEach((pkg, index) => {
-      images.push({
-        id: `homepage-package-${index + 1}`,
-        type: 'package',
-        title: `Package: ${pkg.name}`,
-        imageUrl: pkg.url,
-        page: '/',
-        component: 'PackageDeals',
-        context: `Homepage package deal`
-      })
-    })
-
-    // Location Showcase (if used)
-    const locationImages = [
-      { title: 'Luxury Yacht Sunset Cruise', url: 'https://images.unsplash.com/photo-1576169495465-bbbf3d4f4b3c?q=80&w=300' },
-      { title: 'Jet Ski Island Adventure', url: 'https://images.unsplash.com/photo-1626198304462-1a50a62ddb29?q=80&w=300' },
-      { title: 'Snorkeling & Diving Experience', url: 'https://images.unsplash.com/photo-1582738412028-8b5bff7f8273?q=80&w=300' },
-      { title: 'ATV Beach & Trail Adventure', url: 'https://images.unsplash.com/photo-1619317211153-6a40f3cfd540?q=80&w=300' },
-      { title: 'See-Through Kayak Tour', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=300' },
-    ]
-    
-    locationImages.forEach((loc, index) => {
-      images.push({
-        id: `homepage-location-${index + 1}`,
-        type: 'homepage',
-        title: loc.title,
-        imageUrl: loc.url,
-        page: '/',
-        component: 'LocationShowcase',
-        context: `Location showcase activity`
-      })
-    })
-
     return images
   }
 
@@ -126,39 +120,56 @@ export class SiteImageScanner {
    */
   private scanStaticPageImages(): SiteImage[] {
     const images: SiteImage[] = []
+    
+    // Load site images config for pages
+    try {
+      const dataDir = join(process.cwd(), 'data')
+      const configPath = join(dataDir, 'site-images-config.json')
+      if (existsSync(configPath)) {
+        const config = JSON.parse(readFileSync(configPath, 'utf-8'))
+        
+        // About page
+        if (config.pages?.about) {
+          images.push({
+            id: 'about-hero',
+            type: 'page',
+            title: 'About Page Hero',
+            imageUrl: config.pages.about.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070',
+            page: '/about',
+            component: 'Hero',
+            context: 'About page background'
+          })
+        }
 
-    // About page
-    images.push({
-      id: 'about-hero',
-      type: 'page',
-      title: 'About Page Hero',
-      imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070',
-      page: '/about',
-      component: 'Hero',
-      context: 'About page background'
-    })
+        // Contact page
+        if (config.pages?.contact) {
+          images.push({
+            id: 'contact-hero',
+            type: 'page',
+            title: 'Contact Page Hero',
+            imageUrl: config.pages.contact.heroImage || 'https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070',
+            page: '/contact',
+            component: 'Hero',
+            context: 'Contact page background'
+          })
+        }
 
-    // Contact page
-    images.push({
-      id: 'contact-hero',
-      type: 'page',
-      title: 'Contact Page Hero',
-      imageUrl: 'https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070',
-      page: '/contact',
-      component: 'Hero',
-      context: 'Contact page background'
-    })
-
-    // Viator page
-    images.push({
-      id: 'viator-hero',
-      type: 'viator',
-      title: 'Viator Page Hero',
-      imageUrl: 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070',
-      page: '/viator',
-      component: 'Hero',
-      context: 'Viator activities page background'
-    })
+        // Viator page
+        if (config.pages?.viator) {
+          images.push({
+            id: 'viator-hero',
+            type: 'viator',
+            title: 'Viator Page Hero',
+            imageUrl: config.pages.viator.heroImage || 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070',
+            page: '/viator',
+            component: 'Hero',
+            context: 'Viator activities page background'
+          })
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load page images from config:', error)
+    }
 
     return images
   }

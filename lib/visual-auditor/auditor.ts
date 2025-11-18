@@ -528,16 +528,117 @@ export class VisualAuditor {
       }
     }
 
-    // Note: Static/hardcoded images (homepage, packages, testimonials, etc.) 
-    // cannot be auto-replaced but are still audited and shown in results
-    const staticImageCount = results.filter(r => 
-      ['homepage', 'package', 'testimonial', 'page', 'activity'].includes(r.type)
-    ).filter(r => r.suggestedImage).length
+    // Update static site images configuration
+    const staticImageResults = results.filter(r => 
+      ['homepage', 'package', 'testimonial', 'page', 'activity', 'viator'].includes(r.type)
+    ).filter(r => r.suggestedImage)
+    
+    if (staticImageResults.length > 0) {
+      const siteImagesConfigPath = join(dataDir, 'site-images-config.json')
+      if (existsSync(siteImagesConfigPath)) {
+        const siteImagesConfig = JSON.parse(readFileSync(siteImagesConfigPath, 'utf-8'))
+        let configUpdated = false
 
-    if (staticImageCount > 0) {
-      console.log(`Note: ${staticImageCount} static/hardcoded images found that need manual replacement.`)
-      console.log('These images are in component files and cannot be auto-replaced.')
-      console.log('Please review the audit results and update them manually.')
+        for (const result of staticImageResults) {
+          // Update homepage hero
+          if (result.id === 'hero-background' && result.type === 'homepage') {
+            siteImagesConfig.homepage.hero.backgroundImage = result.suggestedImage
+            configUpdated = true
+            corrected++
+            console.log(`✅ Updated homepage hero background`)
+          }
+          
+          // Update testimonials
+          if (result.type === 'testimonial') {
+            const testimonialMatch = result.id.match(/testimonial-(\d+)/)
+            if (testimonialMatch) {
+              const testimonialIndex = parseInt(testimonialMatch[1])
+              if (siteImagesConfig.testimonials[testimonialIndex]) {
+                siteImagesConfig.testimonials[testimonialIndex].image = result.suggestedImage
+                configUpdated = true
+                corrected++
+                console.log(`✅ Updated testimonial ${testimonialIndex + 1} image`)
+              }
+            }
+          }
+          
+          // Update packages
+          if (result.type === 'package') {
+            const packageMatch = result.id.match(/package-(\d+)/)
+            if (packageMatch) {
+              const packageId = parseInt(packageMatch[1])
+              const packageConfig = siteImagesConfig.packages.find((p: any) => p.id === packageId)
+              if (packageConfig) {
+                packageConfig.image = result.suggestedImage
+                configUpdated = true
+                corrected++
+                console.log(`✅ Updated package ${packageId} image`)
+              }
+            }
+          }
+          
+          // Update activities
+          if (result.type === 'activity') {
+            const activityMatch = result.id.match(/activity-(\d+)|itinerary-(\d+)/)
+            if (activityMatch) {
+              const activityId = parseInt(activityMatch[1] || activityMatch[2])
+              const activityConfig = siteImagesConfig.activities.find((a: any) => a.id === activityId)
+              if (activityConfig) {
+                activityConfig.image = result.suggestedImage
+                configUpdated = true
+                corrected++
+                console.log(`✅ Updated activity ${activityId} image`)
+              } else {
+                // Try itinerary
+                const itineraryConfig = siteImagesConfig.itinerary.find((a: any) => a.id === activityId)
+                if (itineraryConfig) {
+                  itineraryConfig.image = result.suggestedImage
+                  configUpdated = true
+                  corrected++
+                  console.log(`✅ Updated itinerary activity ${activityId} image`)
+                }
+              }
+            }
+          }
+          
+          // Update location showcase
+          if (result.type === 'activity' && result.context?.includes('LocationShowcase')) {
+            const locationMatch = result.title
+            const locationConfig = siteImagesConfig.locationShowcase.find((a: any) => a.title === locationMatch)
+            if (locationConfig) {
+              locationConfig.image = result.suggestedImage
+              configUpdated = true
+              corrected++
+              console.log(`✅ Updated location showcase: ${locationMatch}`)
+            }
+          }
+          
+          // Update pages
+          if (result.type === 'page') {
+            if (result.page === '/about' && result.id.includes('hero')) {
+              siteImagesConfig.pages.about.heroImage = result.suggestedImage
+              configUpdated = true
+              corrected++
+              console.log(`✅ Updated about page hero`)
+            } else if (result.page === '/contact' && result.id.includes('hero')) {
+              siteImagesConfig.pages.contact.heroImage = result.suggestedImage
+              configUpdated = true
+              corrected++
+              console.log(`✅ Updated contact page hero`)
+            } else if (result.page === '/viator' && result.id.includes('hero')) {
+              siteImagesConfig.pages.viator.heroImage = result.suggestedImage
+              configUpdated = true
+              corrected++
+              console.log(`✅ Updated viator page hero`)
+            }
+          }
+        }
+
+        if (configUpdated) {
+          writeFileSync(siteImagesConfigPath, JSON.stringify(siteImagesConfig, null, 2))
+          console.log(`✅ Updated site-images-config.json with ${staticImageResults.length} corrections`)
+        }
+      }
     }
 
     return corrected

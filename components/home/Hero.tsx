@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, MapPin, Calendar, Users } from 'lucide-react'
 import Link from 'next/link'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 export function Hero() {
+  const heroBackgroundImage = siteImagesConfig.homepage.hero.backgroundImage
   const [searchData, setSearchData] = useState({
     activity: '',
     location: '',
@@ -19,7 +21,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-ocean-600/90 via-primary-600/80 to-purple-600/90 z-10"></div>
         <img
-          src="https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070"
+          src={heroBackgroundImage}
           alt="Black family enjoying beach vacation in Turks & Caicos"
           className="w-full h-full object-cover"
         />

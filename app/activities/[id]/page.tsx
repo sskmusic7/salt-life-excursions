@@ -9,6 +9,7 @@ import {
   Camera, Anchor, Waves
 } from 'lucide-react'
 import { ReviewSection } from '@/components/activities/ReviewSection'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 // Dynamically import OpenStreetMap (client-side only)
 const OpenStreetMap = dynamic(
@@ -36,7 +37,7 @@ export default function ActivityDetailPage({ params }: { params: { id: string } 
     id: params.id,
     title: 'Luxury Yacht Sunset Cruise',
     provider: 'Ocean Elite Charters',
-    providerLogo: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=100',
+    providerLogo: siteImagesConfig.activityDetail.providerLogo,
     rating: 4.8,
     reviewCount: 126,
     location: 'Grace Bay, Providenciales',
@@ -44,12 +45,7 @@ export default function ActivityDetailPage({ params }: { params: { id: string } 
     price: 499,
     duration: '3 hours',
     groupSize: '2-10 guests',
-    images: [
-      'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?q=80&w=800',
-      'https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=800',
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=800',
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=800',
-    ],
+    images: siteImagesConfig.activityDetail.gallery,
     description: `Experience the magic of a Caribbean sunset aboard our luxurious 60-foot yacht. This premium cruise offers an unforgettable evening on the crystal-clear waters of Turks & Caicos, complete with champagne, gourmet appetizers, and breathtaking views.
 
 Our experienced crew will navigate you through the most stunning coastal areas while you relax in comfort and style. Watch dolphins play in the wake, spot sea turtles, and witness the sky transform into a canvas of oranges, pinks, and purples as the sun sets over the horizon.

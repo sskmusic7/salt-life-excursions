@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { MapPin, Anchor, Waves, Palmtree } from 'lucide-react'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 // Dynamically import OpenStreetMap (client-side only)
 const OpenStreetMap = dynamic(
@@ -20,14 +21,13 @@ const OpenStreetMap = dynamic(
 )
 
 export function LocationShowcase() {
-  const activities = [
+  const activityData = [
     {
       id: 1,
       title: 'Luxury Yacht Sunset Cruise',
       location: 'Grace Bay, Providenciales',
       coordinates: { lat: 21.7907, lng: -72.2584 },
       price: 499,
-      image: 'https://images.unsplash.com/photo-1576169495465-bbbf3d4f4b3c?q=80&w=300',
     },
     {
       id: 2,
@@ -35,7 +35,6 @@ export function LocationShowcase() {
       location: 'Long Bay Beach',
       coordinates: { lat: 21.8028, lng: -72.2650 },
       price: 129,
-      image: 'https://images.unsplash.com/photo-1626198304462-1a50a62ddb29?q=80&w=300',
     },
     {
       id: 3,
@@ -43,7 +42,6 @@ export function LocationShowcase() {
       location: "Smith's Reef",
       coordinates: { lat: 21.7850, lng: -72.2400 },
       price: 89,
-      image: 'https://images.unsplash.com/photo-1582738412028-8b5bff7f8273?q=80&w=300',
     },
     {
       id: 4,
@@ -51,7 +49,6 @@ export function LocationShowcase() {
       location: 'North Caicos',
       coordinates: { lat: 21.9200, lng: -71.9500 },
       price: 159,
-      image: 'https://images.unsplash.com/photo-1619317211153-6a40f3cfd540?q=80&w=300',
     },
     {
       id: 5,
@@ -59,9 +56,17 @@ export function LocationShowcase() {
       location: 'Sapodilla Bay',
       coordinates: { lat: 21.7500, lng: -72.2800 },
       price: 75,
-      image: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=300',
     },
   ]
+
+  // Merge with images from config
+  const activities = activityData.map((activity) => {
+    const configImage = siteImagesConfig.locationShowcase.find(item => item.title === activity.title)
+    return {
+      ...activity,
+      image: configImage?.image || 'https://images.unsplash.com/photo-1576169495465-bbbf3d4f4b3c?q=80&w=300'
+    }
+  })
 
   const regions = [
     {

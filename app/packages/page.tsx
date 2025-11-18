@@ -3,9 +3,10 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Check, TrendingUp, Users, Clock, DollarSign } from 'lucide-react'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 export default function PackagesPage() {
-  const packages = [
+  const packageData = [
     {
       id: 1,
       name: 'Adventure Seeker',
@@ -23,7 +24,6 @@ export default function PackagesPage() {
         'Beach BBQ Lunch',
         'GoPro Photos Included',
       ],
-      image: 'https://images.unsplash.com/photo-1610484826922-3f84c2efcc89?q=80&w=2070',
     },
     {
       id: 2,
@@ -44,7 +44,6 @@ export default function PackagesPage() {
         'Champagne & Catering',
         'Professional Photography',
       ],
-      image: 'https://images.unsplash.com/photo-1579762715118-a6f1d4b434b9?q=80&w=2070',
     },
     {
       id: 3,
@@ -64,7 +63,6 @@ export default function PackagesPage() {
         'Island Picnic Lunch',
         'Kids Activity Pack',
       ],
-      image: 'https://images.unsplash.com/photo-1605733160314-4f3d462f9529?q=80&w=2070',
     },
     {
       id: 4,
@@ -83,7 +81,6 @@ export default function PackagesPage() {
         'Champagne & Roses',
         'Professional Photoshoot',
       ],
-      image: 'https://images.unsplash.com/photo-1511295742362-c92ceddbd5fd?q=80&w=2070',
     },
     {
       id: 5,
@@ -102,7 +99,6 @@ export default function PackagesPage() {
         'Historical Sites Tour',
         'Souvenir Shopping',
       ],
-      image: 'https://images.unsplash.com/photo-1517404215738-15263e9f9178?q=80&w=2070',
     },
     {
       id: 6,
@@ -121,9 +117,17 @@ export default function PackagesPage() {
         'Snorkeling',
         'Beach Access',
       ],
-      image: 'https://images.unsplash.com/photo-1626198304462-1a50a62ddb29?q=80&w=2070',
     },
   ]
+
+  // Merge with images from config
+  const packages = packageData.map((pkg) => {
+    const configImage = siteImagesConfig.packages.find(p => p.id === pkg.id)
+    return {
+      ...pkg,
+      image: configImage?.image || 'https://images.unsplash.com/photo-1610484826922-3f84c2efcc89?q=80&w=2070'
+    }
+  })
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">

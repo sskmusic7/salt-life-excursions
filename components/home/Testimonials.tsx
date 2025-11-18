@@ -2,14 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { Star, Quote } from 'lucide-react'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 export function Testimonials() {
-  const testimonials = [
+  const testimonialData = [
     {
       name: 'Sarah Mitchell',
       location: 'New York, USA',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=200',
       text: 'Salt Life made our honeymoon absolutely perfect! The yacht cruise was breathtaking, and the VIP dining experience was unforgettable. Everything was so easy to book!',
       activity: 'Luxury Yacht & VIP Dining',
     },
@@ -17,7 +17,6 @@ export function Testimonials() {
       name: 'James Rodriguez',
       location: 'Miami, USA',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200',
       text: 'Best family vacation ever! The package deal was incredible value. Kids loved the snorkeling and kayaking. Professional staff and seamless experience from start to finish.',
       activity: 'Family Fun Package',
     },
@@ -25,7 +24,6 @@ export function Testimonials() {
       name: 'Emily Chen',
       location: 'Toronto, Canada',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200',
       text: 'The jet ski adventure was thrilling! Great equipment, safety-focused guides, and stunning views. Will definitely book again on our next visit to TCI!',
       activity: 'Jet Ski Adventure',
     },
@@ -33,7 +31,6 @@ export function Testimonials() {
       name: 'Michael Thompson',
       location: 'London, UK',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200',
       text: 'Exceptional service and attention to detail. The provider approval process ensures quality. Used the platform for multiple activities - all were outstanding!',
       activity: 'Multiple Activities',
     },
@@ -41,7 +38,6 @@ export function Testimonials() {
       name: 'Lisa Anderson',
       location: 'Los Angeles, USA',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200',
       text: 'The ATV tour was amazing! Guides were knowledgeable and fun. Saw parts of the island we never would have found on our own. Highly recommend!',
       activity: 'ATV Beach Tour',
     },
@@ -49,11 +45,19 @@ export function Testimonials() {
       name: 'David Kim',
       location: 'Seoul, South Korea',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200',
       text: 'Perfect platform for booking island activities! Multi-language support made it easy to navigate. Customer service was responsive and helpful.',
       activity: 'Snorkeling Experience',
     },
   ]
+
+  // Merge with images from config
+  const testimonials = testimonialData.map((testimonial, index) => {
+    const configImage = siteImagesConfig.testimonials[index]
+    return {
+      ...testimonial,
+      image: configImage?.image || 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=200'
+    }
+  })
 
   return (
     <section className="section-padding bg-white/10 backdrop-blur-sm">

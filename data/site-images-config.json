@@ -1,0 +1,181 @@
+{
+  "homepage": {
+    "hero": {
+      "backgroundImage": "https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070"
+    }
+  },
+  "testimonials": [
+    {
+      "name": "Sarah Mitchell",
+      "image": "https://www.nonesuch.com/sites/g/files/g2000014771/files/styles/large/public/2022-07/various-artists-a-tribute-to-joni-mitchell-450.jpg?itok=aP9OKory"
+    },
+    {
+      "name": "James Rodriguez",
+      "image": "https://i.ebayimg.com/images/g/tDwAAOSwowZg~Itz/s-l400.jpg"
+    },
+    {
+      "name": "Emily Chen",
+      "image": "https://online.uga.edu/wp-content/uploads/2025/07/Emily-Chen_Bendle-480x0-c-default.jpg"
+    },
+    {
+      "name": "Michael Thompson",
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200"
+    },
+    {
+      "name": "Lisa Anderson",
+      "image": "https://i.ebayimg.com/images/g/XUsAAOSw0StmmMB-/s-l400.jpg"
+    },
+    {
+      "name": "David Kim",
+      "image": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2f/0e/91/a4/caption.jpg?w=900&h=500&s=1"
+    }
+  ],
+  "packages": [
+    {
+      "id": 1,
+      "name": "Adventure Seeker",
+      "image": "https://i.ebayimg.com/images/g/DJ0AAOSwHEdmjrzH/s-l400.png"
+    },
+    {
+      "id": 2,
+      "name": "Luxury Escape",
+      "image": "https://tfvoyages.com/wp-content/uploads/2025/06/Turks-and-Caicos-Vacation-Package-1024x288.png"
+    },
+    {
+      "id": 3,
+      "name": "Family Fun Pack",
+      "image": "https://i.ebayimg.com/images/g/4PwAAOSwsj1jwCZV/s-l1200.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Romantic Getaway",
+      "image": "https://thesandstc.com/wp-content/uploads/2022/08/winner-1-2.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Island Explorer",
+      "image": "https://www.explorerventures.com/wp-content/smush-webp/2019/04/TCEX2-UW-112.jpg.webp"
+    },
+    {
+      "id": 6,
+      "name": "Water Sports Combo",
+      "image": "https://cdn2.veltra.com/ptr/20171023193617_1974339015_2156_0.jpg?imwidth=550&impolicy=custom"
+    }
+  ],
+  "activities": [
+    {
+      "id": 1,
+      "title": "Luxury Yacht Sunset Cruise",
+      "image": "https://media.tacdn.com/media/attractions-splice-spp-674x446/12/5c/0d/96.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Jet Ski Island Adventure",
+      "image": "https://www.experiencedtravellers.com/wp-content/uploads/2023/01/Somewhere-Lombok-768x347.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Snorkeling & Diving Experience",
+      "image": "https://media.tacdn.com/media/attractions-splice-spp-674x446/12/48/ab/ad.jpg"
+    },
+    {
+      "id": 4,
+      "title": "ATV Beach & Trail Adventure",
+      "image": "https://media.tacdn.com/media/attractions-splice-spp-674x446/13/16/9f/2e.jpg"
+    },
+    {
+      "id": 5,
+      "title": "See-Through Kayak Tour",
+      "image": "https://www.visittci.com/thing/clear-kayaking-pr/cover_1024x341.jpg"
+    },
+    {
+      "id": 6,
+      "title": "VIP Concierge Dining",
+      "image": "https://www.lomashospitality.com/media/uploads/galeriahabitaciones/edcr-suc-4.jpg?q=pr:sharp/rs:fill/w:1200/h:700/g:ce/f:jpg"
+    },
+    {
+      "id": 7,
+      "title": "Private Beach Picnic",
+      "image": "https://media.tacdn.com/media/attractions-splice-spp-674x446/13/16/ac/a8.jpg"
+    },
+    {
+      "id": 8,
+      "title": "Island Hopping Adventure",
+      "image": "https://www.oceanbreezeresorttci.com/wp-content/uploads/2025/08/Island-Hopping-Adventure-768x419.jpeg"
+    }
+  ],
+  "itinerary": [
+    {
+      "id": 1,
+      "title": "Luxury Yacht Sunset Cruise",
+      "image": "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?q=80&w=300"
+    },
+    {
+      "id": 2,
+      "title": "Jet Ski Island Adventure",
+      "image": "https://images.unsplash.com/photo-1626297753255-e6f29d39dece?q=80&w=300"
+    },
+    {
+      "id": 3,
+      "title": "Snorkeling & Diving Experience",
+      "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=300"
+    },
+    {
+      "id": 4,
+      "title": "ATV Beach & Trail Adventure",
+      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=300"
+    },
+    {
+      "id": 5,
+      "title": "See-Through Kayak Tour",
+      "image": "https://images.unsplash.com/photo-1502933691298-84fc14542831?q=80&w=300"
+    },
+    {
+      "id": 6,
+      "title": "VIP Concierge Dining",
+      "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=300"
+    }
+  ],
+  "locationShowcase": [
+    {
+      "title": "Luxury Yacht Sunset Cruise",
+      "image": "https://images.unsplash.com/photo-1576169495465-bbbf3d4f4b3c?q=80&w=300"
+    },
+    {
+      "title": "Jet Ski Island Adventure",
+      "image": "https://images.unsplash.com/photo-1626198304462-1a50a62ddb29?q=80&w=300"
+    },
+    {
+      "title": "Snorkeling & Diving Experience",
+      "image": "https://images.unsplash.com/photo-1582738412028-8b5bff7f8273?q=80&w=300"
+    },
+    {
+      "title": "ATV Beach & Trail Adventure",
+      "image": "https://images.unsplash.com/photo-1619317211153-6a40f3cfd540?q=80&w=300"
+    },
+    {
+      "title": "See-Through Kayak Tour",
+      "image": "https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=300"
+    }
+  ],
+  "pages": {
+    "about": {
+      "heroImage": "http://rqipartners.com/wp-content/uploads/canada-landing-page-hero-updated.jpg"
+    },
+    "contact": {
+      "heroImage": "https://www.perkins.org/wp-content/uploads/2021/05/HI-Contact-Page-Hero.jpg"
+    },
+    "viator": {
+      "heroImage": "https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070"
+    }
+  },
+  "activityDetail": {
+    "providerLogo": "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=100",
+    "gallery": [
+      "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?q=80&w=800",
+      "https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=800",
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=800",
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=800"
+    ]
+  }
+}
