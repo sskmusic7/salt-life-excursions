@@ -6,6 +6,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Award, Users, Globe, Heart } from 'lucide-react'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 export const metadata = {
   title: 'About Us - Salt Life Excursions',
@@ -13,13 +14,15 @@ export const metadata = {
 }
 
 export default function AboutPage() {
+  const heroImage = siteImagesConfig.pages?.about?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070'
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-ocean-50 to-white">
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-r from-ocean-600/90 to-ocean-400/80 z-10" />
         <img
-          src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070"
+          src={heroImage}
           alt="Turks & Caicos"
           className="absolute inset-0 w-full h-full object-cover"
         />

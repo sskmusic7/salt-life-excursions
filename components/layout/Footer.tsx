@@ -8,12 +8,12 @@ export function Footer() {
 
   const footerLinks = {
     activities: [
-      { name: 'Jet Ski', href: '/activities/jet-ski' },
-      { name: 'Snorkeling & Diving', href: '/activities/snorkeling' },
-      { name: 'Yacht Rides', href: '/activities/yacht' },
-      { name: 'ATV Tours', href: '/activities/atv' },
-      { name: 'See-Through Kayak', href: '/activities/kayak' },
-      { name: 'VIP Experiences', href: '/activities/vip' },
+      { name: 'Jet Ski', href: '/activities' },
+      { name: 'Snorkeling & Diving', href: '/activities' },
+      { name: 'Yacht Rides', href: '/activities' },
+      { name: 'ATV Tours', href: '/activities' },
+      { name: 'See-Through Kayak', href: '/activities' },
+      { name: 'VIP Experiences', href: '/activities' },
     ],
     company: [
       { name: 'About Us', href: '/about' },

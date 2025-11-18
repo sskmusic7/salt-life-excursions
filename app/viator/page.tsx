@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import { Search, MapPin, Star, Clock, Users, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 interface ViatorProduct {
   productCode: string
@@ -32,6 +33,7 @@ export default function ViatorPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('turks caicos')
   const [error, setError] = useState<string | null>(null)
+  const heroImage = siteImagesConfig.pages?.viator?.heroImage || 'https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070'
 
   // Auto-fetch on page load - acts like a window/mirror to Viator API
   // Fetches real-time listings from Viator backend on every visit
@@ -96,7 +98,7 @@ export default function ViatorPage() {
       <section className="relative h-[50vh] min-h-[350px] flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-r from-ocean-600/90 to-ocean-400/80 z-10" />
         <img
-          src="https://images.unsplash.com/photo-1583037189850-1921ae7c6c22?q=80&w=2070"
+          src={heroImage}
           alt="Viator Activities"
           className="absolute inset-0 w-full h-full object-cover"
         />

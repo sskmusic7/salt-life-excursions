@@ -7,8 +7,10 @@
 
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react'
+import siteImagesConfig from '@/data/site-images-config.json'
 
 export default function ContactPage() {
+  const heroImage = siteImagesConfig.pages?.contact?.heroImage || 'https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,7 +46,7 @@ export default function ContactPage() {
       <section className="relative h-[40vh] min-h-[300px] flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-r from-ocean-600/90 to-ocean-400/80 z-10" />
         <img
-          src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070"
+          src={heroImage}
           alt="Contact Us"
           className="absolute inset-0 w-full h-full object-cover"
         />
