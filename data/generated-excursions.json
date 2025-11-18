@@ -173,7 +173,7 @@
         "photographerUrl": "https://unsplash.com/@quickps"
       },
       {
-        "url": "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/10/48/93/d4.jpg",
+        "url": "https://production.media.dcx.clubmed/?url=https%3A%2F%2Fassets.dream.clubmed%2Fpm_7531_252_252296-gtoplyf1lo-swhr.jpg&format=webp&width=610&height=610&quality=70",
         "thumbnail": "https://images.unsplash.com/photo-1662197179812-a02407622d37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjM0MDd8MHwxfHNlYXJjaHw0fHx0dXJrcyUyMGFuZCUyMGNhaWNvcyUyMGpldCUyMHNraSUyMFR1cmtzJTIwYW5kJTIwQ2FpY29zfGVufDB8MHx8fDE3NjE3Nzg3ODV8MA&ixlib=rb-4.1.0&q=80&w=200",
         "alt": "a group of airplanes flying over water",
         "photographer": "Chris Talbot",
@@ -1204,7 +1204,7 @@
     ],
     "images": [
       {
-        "url": "https://blairmacpherson.com/wp-content/uploads/2024/11/shell-washes-up-on-tropical-beach.jpg",
+        "url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2f/fa/53/76/caption.jpg?w=500&h=400&s=1",
         "thumbnail": "https://images.unsplash.com/photo-1692964870783-351ebe62edc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjM0MDd8MHwxfHNlYXJjaHwxfHx0dXJrcyUyMGFuZCUyMGNhaWNvcyUyMGF0diUyMHRvdXIlMjBUdXJrcyUyMGFuZCUyMENhaWNvc3xlbnwwfDB8fHwxNzYxNzc4Nzg1fDA&ixlib=rb-4.1.0&q=80&w=200",
         "alt": "a sign that says cancun with a dragon sitting on top of it",
         "photographer": "Carlos Fernando Bendfeldt MD",
@@ -1732,7 +1732,7 @@
     ],
     "images": [
       {
-        "url": "https://paradiseluxurycharters.com/wp-content/uploads/2025/01/pontoon-full-day.jpg",
+        "url": "https://media.tacdn.com/media/attractions-splice-spp-674x446/17/05/f0/8c.jpg",
         "thumbnail": "https://images.unsplash.com/photo-1498121382754-15fc18afe45c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjM0MDd8MHwxfHNlYXJjaHwxfHx0dXJrcyUyMGFuZCUyMGNhaWNvcyUyMGlzbGFuZCUyMGhvcHBpbmclMjBUdXJrcyUyMGFuZCUyMENhaWNvc3xlbnwwfDB8fHwxNzYxNzc4Nzg1fDA&ixlib=rb-4.1.0&q=80&w=200",
         "alt": "aerial photography of island",
         "photographer": "Nathan Anderson",
