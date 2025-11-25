@@ -24,14 +24,12 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
     
-    // Use Viator's correct freetext search endpoint
-    // Try /search/freetext (v2.0) instead of /partner/search/freetext
-    const response: any = await client.post('/search/freetext', {
-      searchTerm: query,
-      searchType: 'PRODUCTS',
-      topX: 50, // Increased to get more results
-      currency: 'USD',
-      sortOrder: 'RECOMMENDED', // Get best matches first
+    // Use Viator's product search endpoint with destination filtering
+    // Turks & Caicos destination ID: 2489 (you'll need to verify this)
+    // For now, we'll use modified-since to get products
+    const response: any = await client.post('/partner/products/modified-since', {
+      count: 50,
+      currency: 'USD'
     })
     
     console.log('✅ Viator API Response received:', {
@@ -90,12 +88,16 @@ export async function POST(request: NextRequest) {
 
     const client = getViatorClient()
     
-    const response: any = await client.post('/search/freetext', {
+    const response: any = await client.post('/partner/products/search', {
       searchTerm,
-      searchType: 'PRODUCTS',
+      pagination: {
+        offset: 0,
+        limit: 50
+      },
       currency: 'USD',
-      topX: 50,
-      sortOrder: 'RECOMMENDED',
+      sorting: {
+        sortBy: 'POPULARITY'
+      },
       ...filters,
     }, { language })
     

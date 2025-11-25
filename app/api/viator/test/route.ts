@@ -38,15 +38,10 @@ export async function GET() {
 
     const client = getViatorClient()
     
-    // Test with a simple search
-    console.log('Testing Viator API connection with search: "turks caicos"')
-    const response: any = await client.post('/search/freetext', {
-      searchTerm: 'turks caicos',
-      searchType: 'PRODUCTS',
-      topX: 5,
-      currency: 'USD',
-      sortOrder: 'RECOMMENDED',
-    })
+    // Test with a simple product fetch - try getting a known product
+    console.log('Testing Viator API connection - getting product by code')
+    // Try a known Viator product code (Sydney Opera House tour)
+    const response: any = await client.get('/partner/products/5010SYDNEY')
     
     console.log('Viator API Response:', JSON.stringify(response, null, 2))
     
