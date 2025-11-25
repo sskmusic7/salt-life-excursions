@@ -103,6 +103,18 @@ export async function POST(request: NextRequest) {
 }
 
 // Transform Viator API response to our format
+interface TransformedViatorProduct {
+  productCode: string
+  productName: string
+  primaryDestinationName: string
+  rating: number
+  reviewCount: number
+  duration: string
+  images: Array<{ url: string; alt: string }>
+  pricing: { from: number; currency: string }
+  bookingLink: string
+}
+
 function transformViatorProducts(response: any) {
   // Viator freetext search returns data in different formats depending on API version
   // Try multiple possible response structures
@@ -123,7 +135,7 @@ function transformViatorProducts(response: any) {
     return []
   }
   
-  return products.map((product: any) => {
+  return products.map((product: any): TransformedViatorProduct => {
     const productCode = product.productCode || product.code || product.id || ''
     const productName = product.title || product.productName || product.name || 'Untitled Activity'
     
@@ -167,7 +179,7 @@ function transformViatorProducts(response: any) {
       },
       bookingLink,
     }
-  }).filter(p => p.productCode || p.productName !== 'Untitled Activity') // Filter out invalid products
+  }).filter((p: TransformedViatorProduct) => p.productCode || p.productName !== 'Untitled Activity') // Filter out invalid products
 }
 
 
