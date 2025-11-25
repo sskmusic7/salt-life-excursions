@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:site": "node scripts/test-site.js",
+    "test:site:headless": "headless=true node scripts/test-site.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -51,6 +53,7 @@
   "devDependencies": {
     "@types/leaflet": "^1.9.21",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.0"
+    "eslint-config-next": "14.2.0",
+    "playwright": "^1.57.0"
   }
 }
