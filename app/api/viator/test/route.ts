@@ -40,7 +40,7 @@ export async function GET() {
     
     // Test with a simple search
     console.log('Testing Viator API connection with search: "turks caicos"')
-    const response = await client.post('/partner/search/freetext', {
+    const response: any = await client.post('/search/freetext', {
       searchTerm: 'turks caicos',
       searchType: 'PRODUCTS',
       topX: 5,
