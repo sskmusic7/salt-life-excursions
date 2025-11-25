@@ -51,6 +51,25 @@ npm run test:site:headless
 
 Or manually edit `scripts/test-site.js` and change `headless: false` to `headless: true`.
 
+#### Keep Retrying Until Success
+
+By default the tester will retry a page indefinitely (`TEST_MAX_RETRIES=0`). You can override this:
+
+```bash
+# Retry each page 5 times with 10s between attempts
+TEST_MAX_RETRIES=5 TEST_RETRY_DELAY=10000 npm run test:site
+```
+
+Available environment variables:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `TEST_URL` | `https://salt-life-excursions.netlify.app` | Base URL to crawl |
+| `TEST_MAX_RETRIES` | `0` | Retries per page (0 = infinite) |
+| `TEST_RETRY_DELAY` | `3000` | Delay between retries in ms |
+| `TEST_TIMEOUT` | `45000` | `page.goto` timeout in ms |
+| `TEST_WAIT_UNTIL` | `networkidle` | Playwright waitUntil option (`load`, `domcontentloaded`, `networkidle`) |
+
 ### What It Tests
 
 - ✅ Page load times

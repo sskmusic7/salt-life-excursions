@@ -14,6 +14,10 @@ class SiteTester {
     };
     this.browser = null;
     this.page = null;
+    this.maxRetries = parseInt(process.env.TEST_MAX_RETRIES || '0', 10); // 0 = infinite retries
+    this.retryDelay = parseInt(process.env.TEST_RETRY_DELAY || '3000', 10);
+    this.gotoTimeout = parseInt(process.env.TEST_TIMEOUT || '45000', 10);
+    this.waitUntil = process.env.TEST_WAIT_UNTIL || 'networkidle';
   }
 
   async initialize() {
@@ -80,21 +84,26 @@ class SiteTester {
     });
   }
 
-  async testPage(url) {
-    if (this.visitedUrls.has(url)) {
-      return;
+  async testPage(url, attempt = 1) {
+    const isFirstAttempt = attempt === 1;
+    if (isFirstAttempt) {
+      if (this.visitedUrls.has(url)) {
+        return;
+      }
+      this.visitedUrls.add(url);
+    } else {
+      console.log(`   ♻️ Retry attempt ${attempt} for ${url}`);
     }
 
-    console.log(`\n🔍 Testing: ${url}`);
-    this.visitedUrls.add(url);
+    console.log(isFirstAttempt ? `\n🔍 Testing: ${url}` : `   🔁 Retesting: ${url}`);
 
     try {
       const startTime = Date.now();
       
       // Navigate to the page
       const response = await this.page.goto(url, { 
-        waitUntil: 'networkidle',
-        timeout: 30000 
+        waitUntil: this.waitUntil,
+        timeout: this.gotoTimeout 
       });
       const loadTime = Date.now() - startTime;
       
@@ -290,13 +299,22 @@ class SiteTester {
 
       console.log(`   ✅ Page tested successfully (${loadTime}ms)`);
     } catch (error) {
+      const shouldRetry = this.maxRetries === 0 || attempt < this.maxRetries;
+      console.log(`   ❌ Error: ${error.message}`);
+
+      if (shouldRetry) {
+        const nextAttempt = attempt + 1;
+        console.log(`   ⏳ Waiting ${this.retryDelay}ms before retry ${nextAttempt}...`);
+        await this.page.waitForTimeout(this.retryDelay);
+        return this.testPage(url, nextAttempt);
+      }
+
       this.results.failed.push({
         type: 'test_error',
         url: url,
         error: error.message,
         stack: error.stack
       });
-      console.log(`   ❌ Error: ${error.message}`);
     }
   }
 
