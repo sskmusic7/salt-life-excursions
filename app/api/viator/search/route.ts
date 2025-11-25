@@ -15,6 +15,15 @@ export async function GET(request: NextRequest) {
     
     const client = getViatorClient()
     
+    // Log request details for debugging
+    console.log('🔍 Viator API Request:', {
+      endpoint: '/partner/search/freetext',
+      searchTerm: query,
+      env: process.env.VIATOR_ENV || 'sandbox',
+      hasApiKey: !!(process.env.VIATOR_API_KEY_SANDBOX || process.env.VIATOR_API_KEY),
+      timestamp: new Date().toISOString()
+    })
+    
     // Use Viator's correct freetext search endpoint
     const response = await client.post('/partner/search/freetext', {
       searchTerm: query,
@@ -24,11 +33,18 @@ export async function GET(request: NextRequest) {
       sortOrder: 'RECOMMENDED', // Get best matches first
     })
     
+    console.log('✅ Viator API Response received:', {
+      hasData: !!response,
+      hasProducts: !!(response?.data?.products || response?.products),
+      productCount: response?.data?.products?.length || response?.products?.length || 0
+    })
+    
     // Transform the data for frontend
     const products = transformViatorProducts(response)
     
     // Only return if we got real products
     if (products.length > 0) {
+      console.log(`✅ Returning ${products.length} products from Viator API`)
       return NextResponse.json({ 
         success: true, 
         products,
@@ -40,7 +56,11 @@ export async function GET(request: NextRequest) {
     // If no products, throw to fallback
     throw new Error('No products returned from Viator API')
   } catch (error) {
-    console.error('Viator API Error:', error)
+    console.error('❌ Viator API Error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      type: error instanceof Error ? error.constructor.name : typeof error,
+      stack: error instanceof Error ? error.stack?.split('\n').slice(0, 3) : undefined
+    })
     
     // Try to use mock data as fallback, but indicate it's not from real API
     return NextResponse.json({ 
@@ -48,6 +68,7 @@ export async function GET(request: NextRequest) {
       products: mockViatorProducts,
       count: mockViatorProducts.length,
       note: 'Using demo data - Viator API key may need activation or check API credentials',
+      error: error instanceof Error ? error.message : 'API request failed',
       source: 'mock'
     })
   }

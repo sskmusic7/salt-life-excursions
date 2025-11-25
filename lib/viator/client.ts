@@ -76,17 +76,48 @@ export class ViatorAPIClient {
       }
 
       if (!response.ok) {
-        const errorData: ViatorAPIError = await response.json()
-        throw new Error(
-          `Viator API Error (${errorData.code}): ${errorData.message}`
-        )
+        let errorData: ViatorAPIError | null = null
+        let errorText = ''
+        
+        try {
+          errorText = await response.text()
+          errorData = JSON.parse(errorText)
+        } catch (parseError) {
+          // If JSON parse fails, use the raw text
+          console.error('Failed to parse Viator error response:', errorText)
+        }
+        
+        const errorMessage = errorData 
+          ? `Viator API Error (${errorData.code}): ${errorData.message}`
+          : `Viator API Error (${response.status} ${response.statusText}): ${errorText.substring(0, 200)}`
+        
+        console.error('❌ Viator API returned error:', {
+          status: response.status,
+          statusText: response.statusText,
+          url,
+          errorData,
+          errorText: errorText.substring(0, 500)
+        })
+        
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()
+      
+      console.log('✅ Viator API request successful:', {
+        url,
+        hasData: !!data,
+        dataKeys: Object.keys(data || {})
+      })
+      
       return data
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Viator API request failed:', error.message)
+        console.error('❌ Viator API request failed:', {
+          message: error.message,
+          url,
+          headers: requestHeaders
+        })
         throw error
       }
       throw new Error('Unknown error occurred during API request')
