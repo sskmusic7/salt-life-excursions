@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
     })
     
     // Use Viator's correct freetext search endpoint
-    const response = await client.post('/partner/search/freetext', {
+    // Try /search/freetext (v2.0) instead of /partner/search/freetext
+    const response = await client.post('/search/freetext', {
       searchTerm: query,
       searchType: 'PRODUCTS',
       topX: 50, // Increased to get more results
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     const client = getViatorClient()
     
-    const response = await client.post('/partner/search/freetext', {
+    const response = await client.post('/search/freetext', {
       searchTerm,
       searchType: 'PRODUCTS',
       currency: 'USD',

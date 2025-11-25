@@ -16,7 +16,7 @@ export class ViatorSearchService {
     language?: string
   ): Promise<SearchResponse> {
     const client = getViatorClient()
-    return client.post<SearchResponse>('/partner/search/freetext', request, { language })
+    return client.post<SearchResponse>('/search/freetext', request, { language })
   }
 
   /**
