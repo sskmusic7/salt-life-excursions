@@ -4,9 +4,9 @@ import dynamic from 'next/dynamic'
 import { MapPin, Anchor, Waves, Palmtree } from 'lucide-react'
 import siteImagesConfig from '@/data/site-images-config.json'
 
-// Dynamically import OpenStreetMap (client-side only)
+// Dynamically import OpenStreetMap (client-side only) - uses default export
 const OpenStreetMap = dynamic(
-  () => import('@/components/shared/OpenStreetMap').then(mod => mod.OpenStreetMap),
+  () => import('@/components/shared/OpenStreetMap'),
   { 
     ssr: false,
     loading: () => (

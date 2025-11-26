@@ -5,20 +5,10 @@ import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { Plus, Trash2, Save, Share2, MapPin, DollarSign, Clock, Loader2 } from 'lucide-react'
 
-// Dynamically import OpenStreetMap with proper loading state
+// Dynamically import map with SSR disabled
 const OpenStreetMap = dynamic(
-  () => import('@/components/shared/OpenStreetMap').then(mod => ({ default: mod.OpenStreetMap })),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-[400px] bg-gradient-to-br from-blue-100 to-teal-100 rounded-lg flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-semibold">Loading map...</p>
-        </div>
-      </div>
-    )
-  }
+  () => import('@/components/shared/OpenStreetMap'),
+  { ssr: false }
 )
 
 interface Activity {
@@ -42,12 +32,6 @@ export default function ItineraryBuilderPage() {
   const [itineraryName, setItineraryName] = useState('My Turks & Caicos Adventure')
   const [availableActivities, setAvailableActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
-  const [mapReady, setMapReady] = useState(false)
-
-  // Set map ready after component mounts
-  useEffect(() => {
-    setMapReady(true)
-  }, [])
 
   // Fetch activities from Viator API
   useEffect(() => {
@@ -219,19 +203,13 @@ export default function ItineraryBuilderPage() {
             {/* Map */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Itinerary Map</h2>
-              {mapReady ? (
-                <OpenStreetMap
+              <OpenStreetMap
                   activities={mapActivities}
                   center={DEFAULT_CENTER}
                   zoom={11}
                   height="400px"
                   showItineraryNumbers={true}
                 />
-              ) : (
-                <div className="w-full h-[400px] bg-gradient-to-br from-blue-100 to-teal-100 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-600">Loading map...</p>
-                </div>
-              )}
             </div>
 
             {/* Selected Activities List */}
