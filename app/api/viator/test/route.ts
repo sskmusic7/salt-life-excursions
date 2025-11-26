@@ -38,38 +38,36 @@ export async function GET() {
 
     const client = getViatorClient()
     
-    // Test with a simple product fetch - try getting a known product
-    console.log('Testing Viator API connection - getting product by code')
-    // Try a known Viator product code (Sydney Opera House tour)
-    const response: any = await client.get('/partner/products/5010SYDNEY')
+    // Test with free-text search instead of single product lookup
+    // This is more reliable for testing API connectivity
+    console.log('Testing Viator API connection - using free-text search')
+    const { ViatorSearchService } = await import('@/lib/viator/services/search')
+    const response: any = await ViatorSearchService.searchProducts('turks caicos', {
+      topX: 5,
+      currency: 'USD'
+    })
     
     console.log('Viator API Response:', JSON.stringify(response, null, 2))
     
-    // Check response structure
-    const hasProducts = !!(
-      response?.data?.products?.length ||
-      response?.products?.length ||
-      (Array.isArray(response?.data) && response.data.length) ||
-      (Array.isArray(response) && response.length)
-    )
+    // Check response structure for SearchResponse format
+    const hasProducts = !!(response?.products && response.products.length > 0)
+    const productCount = response?.products?.length || response?.totalCount || 0
     
     return NextResponse.json({
       success: true,
-      message: hasProducts ? 'Viator API is working!' : 'Viator API responded but returned no products',
+      message: hasProducts ? `Viator API is working! Found ${productCount} products` : 'Viator API responded but returned no products',
       diagnostics,
       responseStructure: {
-        hasData: !!response?.data,
         hasProducts: !!response?.products,
-        hasDataProducts: !!response?.data?.products,
-        isArray: Array.isArray(response),
-        isDataArray: Array.isArray(response?.data),
-        productCount: response?.data?.products?.length || 
-                      response?.products?.length || 
-                      (Array.isArray(response?.data) ? response.data.length : 0) ||
-                      (Array.isArray(response) ? response.length : 0) ||
-                      0,
+        productCount: productCount,
+        totalCount: response?.totalCount || 0,
+        isSearchResponse: !!(response?.products && typeof response?.totalCount === 'number'),
       },
-      sampleData: response // Include raw response for debugging
+      sampleData: {
+        productCount: productCount,
+        totalCount: response?.totalCount,
+        firstProduct: response?.products?.[0] || null
+      } // Include sample for debugging (not full response to keep size manageable)
     })
     
   } catch (error) {

@@ -9,14 +9,14 @@ import type { SearchRequest, SearchResponse } from '../types'
 export class ViatorSearchService {
   /**
    * Free-text search for products, destinations, and attractions
-   * Endpoint: POST /search/freetext
+   * Endpoint: POST /partner/search/freetext
    */
   static async freeTextSearch(
     request: SearchRequest,
     language?: string
   ): Promise<SearchResponse> {
     const client = getViatorClient()
-    return client.post<SearchResponse>('/search/freetext', request, { language })
+    return client.post<SearchResponse>('/partner/search/freetext', request, { language })
   }
 
   /**

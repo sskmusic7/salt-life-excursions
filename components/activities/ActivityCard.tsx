@@ -5,18 +5,20 @@ import Link from 'next/link'
 import { Star, MapPin, Clock, Users, Heart } from 'lucide-react'
 
 interface Activity {
-  id: number
+  id: number | string // Can be productCode from Viator
   title: string
   provider: string
   location: string
   price: number
   duration: string
-  capacity: string
+  capacity?: string // Optional for Viator products
   rating: number
   reviews: number
   image: string
-  category: string
-  featured: boolean
+  category?: string // Optional
+  featured?: boolean // Optional
+  bookingLink?: string // For Viator products
+  productCode?: string // For Viator products
 }
 
 interface ActivityCardProps {
@@ -59,9 +61,11 @@ export function ActivityCard({ activity, viewMode, index }: ActivityCardProps) {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="bg-ocean-100 text-ocean-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    {activity.category}
-                  </span>
+                  {activity.category && (
+                    <span className="bg-ocean-100 text-ocean-700 px-3 py-1 rounded-full text-sm font-semibold">
+                      {activity.category}
+                    </span>
+                  )}
                   <div className="flex items-center space-x-1">
                     <Star size={18} className="text-yellow-400 fill-current" />
                     <span className="font-bold text-gray-900">{activity.rating}</span>
@@ -88,17 +92,19 @@ export function ActivityCard({ activity, viewMode, index }: ActivityCardProps) {
                 <Clock size={18} className="mr-2 text-ocean-600" />
                 <span className="text-sm">{activity.duration}</span>
               </div>
-              <div className="flex items-center text-gray-600">
-                <Users size={18} className="mr-2 text-ocean-600" />
-                <span className="text-sm">Up to {activity.capacity}</span>
-              </div>
+              {activity.capacity && (
+                <div className="flex items-center text-gray-600">
+                  <Users size={18} className="mr-2 text-ocean-600" />
+                  <span className="text-sm">Up to {activity.capacity}</span>
+                </div>
+              )}
             </div>
 
             <Link
               href={`/activities/${activity.id}`}
               className="inline-block bg-ocean-600 hover:bg-ocean-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
-              View Details & Book
+              View Details
             </Link>
           </div>
         </div>
@@ -125,11 +131,13 @@ export function ActivityCard({ activity, viewMode, index }: ActivityCardProps) {
             <Heart size={20} className="text-gray-700" />
           </button>
         </div>
-        <div className="absolute top-4 left-4">
-          <span className="bg-ocean-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-            {activity.category}
-          </span>
-        </div>
+        {activity.category && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-ocean-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+              {activity.category}
+            </span>
+          </div>
+        )}
         {activity.featured && (
           <div className="absolute bottom-4 left-4">
             <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -166,10 +174,12 @@ export function ActivityCard({ activity, viewMode, index }: ActivityCardProps) {
               <Clock size={16} className="mr-2 text-ocean-600" />
               {activity.duration}
             </div>
-            <div className="flex items-center">
-              <Users size={16} className="mr-2 text-ocean-600" />
-              Up to {activity.capacity}
-            </div>
+            {activity.capacity && (
+              <div className="flex items-center">
+                <Users size={16} className="mr-2 text-ocean-600" />
+                Up to {activity.capacity}
+              </div>
+            )}
           </div>
         </div>
 

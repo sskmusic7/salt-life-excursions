@@ -2,7 +2,6 @@ import { Hero } from '@/components/home/Hero'
 import { FeaturedActivities } from '@/components/home/FeaturedActivities'
 import { Categories } from '@/components/home/Categories'
 // import { LocationShowcase } from '@/components/home/LocationShowcase'
-import { ViatorShowcase } from '@/components/home/ViatorShowcase'
 import { PackageDeals } from '@/components/home/PackageDeals'
 import { WhyChooseUs } from '@/components/home/WhyChooseUs'
 import { Testimonials } from '@/components/home/Testimonials'
@@ -14,7 +13,6 @@ export default function Home() {
       <Hero />
       <Categories />
       <FeaturedActivities />
-      <ViatorShowcase />
       {/* <LocationShowcase /> */}
       <PackageDeals />
       <WhyChooseUs />

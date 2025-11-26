@@ -331,8 +331,9 @@ export interface SearchResponse {
 
 export interface ProductSearchRequest {
   filtering?: {
+    destination?: string // Destination ID as string (e.g., "732")
     tags?: string[]
-    destId?: number
+    destId?: number // Legacy support, prefer 'destination'
     startDate?: string
     endDate?: string
     priceMin?: number

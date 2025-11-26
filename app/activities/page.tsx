@@ -1,16 +1,30 @@
+/**
+ * Activities Page - Search Engine for Viator Activities
+ * All activities come from Viator API with infinite scroll
+ */
+
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Filter, SlidersHorizontal, Grid, List } from 'lucide-react'
+import { Filter, SlidersHorizontal, Grid, List, Loader2, Search } from 'lucide-react'
 import { ActivityCard } from '@/components/activities/ActivityCard'
 import { FilterSidebar } from '@/components/activities/FilterSidebar'
-import { SearchBar } from '@/components/activities/SearchBar'
+import { useViatorActivities, type ViatorActivity } from '@/lib/hooks/useViatorActivities'
 
 export default function ActivitiesPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(true)
-  const [filters, setFilters] = useState({
+  const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('turks caicos')
+  const [filters, setFilters] = useState<{
+    category: string[]
+    priceRange: number[]
+    duration: string[]
+    capacity: string[]
+    rating: number
+    location: string[]
+  }>({
     category: [],
     priceRange: [0, 1000],
     duration: [],
@@ -19,121 +33,81 @@ export default function ActivitiesPage() {
     location: [],
   })
 
-  // Mock data - in production this would come from API
-  const activities = [
-    {
-      id: 1,
-      title: 'Luxury Yacht Sunset Cruise',
-      provider: 'Ocean Elite Charters',
-      location: 'Grace Bay, Providenciales',
-      price: 499,
-      duration: '3 hours',
-      capacity: '12 guests',
-      rating: 4.9,
-      reviews: 128,
-      image: 'https://images.unsplash.com/photo-1576169495465-bbbf3d4f4b3c?q=80&w=2070',
-      category: 'Yacht',
-      featured: true,
-    },
-    {
-      id: 2,
-      title: 'Jet Ski Island Adventure',
-      provider: 'TCI Water Sports',
-      location: 'Long Bay Beach',
-      price: 129,
-      duration: '1.5 hours',
-      capacity: '2 guests',
-      rating: 4.8,
-      reviews: 256,
-      image: 'https://images.unsplash.com/photo-1626198304462-1a50a62ddb29?q=80&w=2070',
-      category: 'Water Sports',
-      featured: true,
-    },
-    {
-      id: 3,
-      title: 'Snorkeling & Diving Experience',
-      provider: 'Coral Reef Divers',
-      location: "Smith's Reef",
-      price: 89,
-      duration: '2 hours',
-      capacity: '8 guests',
-      rating: 5.0,
-      reviews: 342,
-      image: 'https://images.unsplash.com/photo-1582738412028-8b5bff7f8273?q=80&w=2070',
-      category: 'Snorkeling',
-      featured: true,
-    },
-    {
-      id: 4,
-      title: 'ATV Beach & Trail Adventure',
-      provider: 'Island ATV Tours',
-      location: 'North Caicos',
-      price: 159,
-      duration: '2.5 hours',
-      capacity: '6 guests',
-      rating: 4.7,
-      reviews: 89,
-      image: 'https://images.unsplash.com/photo-1619317211153-6a40f3cfd540?q=80&w=2070',
-      category: 'ATV',
-      featured: false,
-    },
-    {
-      id: 5,
-      title: 'See-Through Kayak Tour',
-      provider: 'Crystal Waters Adventures',
-      location: 'Sapodilla Bay',
-      price: 75,
-      duration: '1 hour',
-      capacity: '4 guests',
-      rating: 4.9,
-      reviews: 167,
-      image: 'https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=2070',
-      category: 'Water Sports',
-      featured: false,
-    },
-    {
-      id: 6,
-      title: 'VIP Concierge Dining',
-      provider: 'Salt Life Concierge',
-      location: 'Various Locations',
-      price: 299,
-      duration: '3 hours',
-      capacity: '10 guests',
-      rating: 5.0,
-      reviews: 94,
-      image: 'https://images.unsplash.com/photo-1520201163981-8e0a1c6abbf9?q=80&w=2070',
-      category: 'VIP',
-      featured: false,
-    },
-    {
-      id: 7,
-      title: 'Private Beach Picnic',
-      provider: 'Beach Bliss',
-      location: 'Taylor Bay',
-      price: 199,
-      duration: '4 hours',
-      capacity: '6 guests',
-      rating: 4.8,
-      reviews: 76,
-      image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070',
-      category: 'Beach',
-      featured: false,
-    },
-    {
-      id: 8,
-      title: 'Island Hopping Adventure',
-      provider: 'Island Express',
-      location: 'Multiple Islands',
-      price: 349,
-      duration: 'Full Day',
-      capacity: '15 guests',
-      rating: 4.9,
-      reviews: 203,
-      image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=2070',
-      category: 'Tours',
-      featured: true,
-    },
-  ]
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm || 'turks caicos')
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Fetch activities from Viator API - loads 10 at a time on scroll
+  const {
+    activities,
+    loading,
+    error,
+    hasMore,
+    totalCount,
+    loadMore,
+    refresh,
+  } = useViatorActivities({
+    searchTerm: debouncedSearch,
+    limit: 10, // Load 10 at a time
+    autoLoad: true,
+    autoLoadAll: false, // Disable auto-load - only load on scroll
+  })
+
+  // Filter activities client-side based on filters
+  const filteredActivities = activities.filter((activity) => {
+    // Price filter
+    if (activity.price < filters.priceRange[0] || activity.price > filters.priceRange[1]) {
+      return false
+    }
+    
+    // Rating filter
+    if (filters.rating > 0 && activity.rating < filters.rating) {
+      return false
+    }
+    
+    // Category filter (if we have categories)
+    if (filters.category.length > 0 && activity.category) {
+      if (!filters.category.includes(activity.category)) {
+        return false
+      }
+    }
+    
+    return true
+  })
+
+  // Infinite scroll handler - load next 10 when near bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if user is near bottom (within 500px)
+      const scrollPosition = window.innerHeight + window.scrollY
+      const documentHeight = document.documentElement.offsetHeight
+      
+      if (scrollPosition >= documentHeight - 500) {
+        if (hasMore && !loading) {
+          loadMore()
+        }
+      }
+    }
+
+    // Throttle scroll events
+    let ticking = false
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', throttledScroll, { passive: true })
+    return () => window.removeEventListener('scroll', throttledScroll)
+  }, [hasMore, loading, loadMore])
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -149,7 +123,7 @@ export default function ActivitiesPage() {
               Discover Amazing Activities
             </h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Explore {activities.length}+ verified experiences in Turks & Caicos
+              Explore {totalCount > 0 ? `${totalCount}+` : ''} verified experiences in Turks & Caicos
             </p>
           </motion.div>
         </div>
@@ -158,7 +132,16 @@ export default function ActivitiesPage() {
       {/* Search Bar */}
       <div className="bg-white shadow-md sticky top-20 z-40">
         <div className="container-custom py-4">
-          <SearchBar />
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search activities..."
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
+            />
+          </div>
         </div>
       </div>
 
@@ -185,7 +168,7 @@ export default function ActivitiesPage() {
                   <span className="font-medium">{showFilters ? 'Hide' : 'Show'} Filters</span>
                 </button>
                 <span className="text-gray-600">
-                  Showing <span className="font-bold text-gray-900">{activities.length}</span> activities
+                  Showing <span className="font-bold text-gray-900">{filteredActivities.length}</span> of {totalCount} activities
                 </span>
               </div>
 
@@ -215,37 +198,100 @@ export default function ActivitiesPage() {
               </div>
             </div>
 
-            {/* Activities Grid/List */}
-            <div
-              className={`grid gap-6 ${
-                viewMode === 'grid'
-                  ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                  : 'grid-cols-1'
-              }`}
-            >
-              {activities.map((activity, index) => (
-                <ActivityCard
-                  key={activity.id}
-                  activity={activity}
-                  viewMode={viewMode}
-                  index={index}
-                />
-              ))}
-            </div>
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center mb-8">
+                <p className="text-red-700 mb-4">{error}</p>
+                <button
+                  onClick={refresh}
+                  className="btn-primary"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
 
-            {/* Load More */}
-            <div className="text-center mt-12">
-              <button className="bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
-                Load More Activities
-              </button>
-            </div>
+            {/* Activities Grid/List */}
+            {filteredActivities.length > 0 ? (
+              <>
+                <div
+                  className={`grid gap-6 ${
+                    viewMode === 'grid'
+                      ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                      : 'grid-cols-1'
+                  }`}
+                >
+                  {filteredActivities.map((activity, index) => {
+                    // Safely map activities with error handling
+                    if (!activity || !activity.id) return null
+                    return (
+                      <ActivityCard
+                        key={activity.id}
+                        activity={{
+                          id: activity.id,
+                          title: activity.title || 'Untitled Activity',
+                          provider: activity.provider || 'Provider',
+                          location: activity.location || 'Location TBD',
+                          price: activity.price || 0,
+                          duration: activity.duration || 'Varies',
+                          capacity: activity.capacity,
+                          rating: activity.rating || 0,
+                          reviews: activity.reviews || 0,
+                          image: activity.image || '/placeholder-image.jpg',
+                          category: activity.category,
+                          featured: activity.featured,
+                          bookingLink: activity.bookingLink,
+                        } as any}
+                        viewMode={viewMode}
+                        index={index}
+                      />
+                    )
+                  })}
+                </div>
+
+                {/* Loading More Indicator - only show if actually loading and has more */}
+                {loading && hasMore && activities.length > 0 && (
+                  <div className="text-center mt-12">
+                    <Loader2 className="animate-spin mx-auto text-ocean-600" size={48} />
+                    <p className="mt-4 text-gray-600">
+                      Loading more activities... ({activities.length} of {totalCount} loaded)
+                    </p>
+                  </div>
+                )}
+
+                {/* Load More Button (fallback if scroll doesn't work) */}
+                {hasMore && !loading && (
+                  <div className="text-center mt-12">
+                    <button
+                      onClick={loadMore}
+                      className="bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+                    >
+                      Load More Activities
+                    </button>
+                  </div>
+                )}
+
+                {/* End of Results */}
+                {!hasMore && filteredActivities.length > 0 && (
+                  <div className="text-center mt-12">
+                    <p className="text-gray-600">You've reached the end! All {totalCount} activities loaded.</p>
+                  </div>
+                )}
+              </>
+            ) : !loading ? (
+              <div className="text-center py-20">
+                <p className="text-xl text-gray-600 mb-4">No activities found</p>
+                <p className="text-gray-500">Try adjusting your search or filters</p>
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <Loader2 className="animate-spin mx-auto text-ocean-600" size={48} />
+                <p className="mt-4 text-gray-600">Loading activities...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   )
 }
-
-
-
-

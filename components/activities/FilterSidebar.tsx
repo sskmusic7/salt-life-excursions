@@ -299,11 +299,11 @@ export function FilterSidebar({ filters, setFilters }: FilterSidebarProps) {
 
       {/* Apply Button */}
       <button className="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 rounded-lg transition-colors mt-4">
-        Apply Filters ({Object.keys(filters).length} active)
+        Apply Filters
       </button>
 
       {/* Active Filters Summary */}
-      {Object.keys(filters).length > 0 && (
+      {(filters.priceRange[1] < 1000 || filters.rating > 0 || filters.category?.length > 0 || filters.duration?.length > 0 || filters.location?.length > 0 || proximitySearch.enabled) && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <p className="text-xs font-semibold text-gray-700 mb-2">Active Filters:</p>
           <div className="flex flex-wrap gap-2">

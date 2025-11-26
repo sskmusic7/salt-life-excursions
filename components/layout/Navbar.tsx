@@ -12,7 +12,6 @@ export function Navbar() {
   const navigation = [
     { name: 'Home', href: '/' },
     { name: 'Activities', href: '/activities' },
-    { name: 'Viator', href: '/viator' },
     { name: 'Package Deals', href: '/packages' },
     { name: 'Itinerary Builder', href: '/itinerary' },
     { name: 'Blog', href: '/blog' },

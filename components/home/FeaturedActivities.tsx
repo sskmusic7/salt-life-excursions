@@ -1,28 +1,83 @@
+/**
+ * Featured Activities Component
+ * Displays activities from Viator API
+ */
+
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Star, MapPin, Clock, Users, Heart } from 'lucide-react'
-import generatedExcursions from '@/data/generated-excursions.json'
+import { Star, MapPin, Clock, Users, Heart, Loader2 } from 'lucide-react'
+
+interface ViatorProduct {
+  productCode: string
+  productName: string
+  primaryDestinationName: string
+  rating: number
+  reviewCount: number
+  duration: string
+  images: Array<{ url: string; alt: string }>
+  pricing: { from: number; currency: string }
+  bookingLink: string
+}
 
 export function FeaturedActivities() {
-  // Use AI-generated excursions (take first 6)
-  const reviewCounts = [128, 256, 342, 89, 167, 94] // Fixed review counts to avoid hydration mismatch
-  const activities = generatedExcursions.slice(0, 6).map((exc: any, index: number) => ({
-    id: exc.id,
-    title: exc.title,
-    provider: 'Salt Life Excursions',
-    location: exc.location.area,
-    price: exc.pricing.adult,
-    duration: `${exc.duration.hours}${exc.duration.minutes ? `.${Math.floor(exc.duration.minutes / 6)}` : ''} hours`,
-    capacity: `${exc.maxGroupSize} guests`,
-    rating: 4.8,
-    reviews: reviewCounts[index] || 100,
-    image: exc.coverImage || exc.images[0]?.url,
-    featured: true,
-    category: exc.category,
-    slug: exc.slug,
-  }))
+  const [activities, setActivities] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchActivities()
+  }, [])
+
+  const fetchActivities = async () => {
+    try {
+      const response = await fetch('/api/viator/search?query=turks caicos&limit=6')
+      const data = await response.json()
+      
+      if (data.success && data.products) {
+        // Transform Viator products to activity format
+        const transformed = data.products.map((product: ViatorProduct) => ({
+          id: product.productCode,
+          title: product.productName,
+          provider: 'Verified Provider',
+          location: product.primaryDestinationName,
+          price: product.pricing.from,
+          duration: product.duration,
+          capacity: 'Varies',
+          rating: product.rating || 4.5,
+          reviews: product.reviewCount || 0,
+          image: product.images[0]?.url || '',
+          category: 'Activity',
+          featured: true,
+          slug: product.productCode,
+          bookingLink: product.bookingLink,
+        }))
+        setActivities(transformed)
+      }
+    } catch (error) {
+      console.error('Error fetching featured activities:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-white/10 backdrop-blur-sm">
+        <div className="container-custom">
+          <div className="text-center py-20">
+            <Loader2 className="animate-spin mx-auto text-ocean-600" size={48} />
+            <p className="mt-4 text-gray-600">Loading featured experiences...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (activities.length === 0) {
+    return null
+  }
 
   return (
     <section className="section-padding bg-white/10 backdrop-blur-sm">
@@ -72,11 +127,13 @@ export function FeaturedActivities() {
                     <Heart size={20} className="text-gray-700" />
                   </button>
                 </div>
-                <div className="absolute top-4 left-4">
-                  <span className="bg-ocean-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {activity.category}
-                  </span>
-                </div>
+                {activity.category && (
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-ocean-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      {activity.category}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Content */}
@@ -84,7 +141,7 @@ export function FeaturedActivities() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-1">
                     <Star size={18} className="text-yellow-400 fill-current" />
-                    <span className="font-bold text-gray-900">{activity.rating}</span>
+                    <span className="font-bold text-gray-900">{activity.rating.toFixed(1)}</span>
                     <span className="text-gray-600 text-sm">({activity.reviews})</span>
                   </div>
                   <div className="text-2xl font-bold text-ocean-600">
@@ -110,19 +167,32 @@ export function FeaturedActivities() {
                       <Clock size={16} className="mr-2 text-ocean-600" />
                       {activity.duration}
                     </div>
-                    <div className="flex items-center">
-                      <Users size={16} className="mr-2 text-ocean-600" />
-                      Up to {activity.capacity}
-                    </div>
+                    {activity.capacity && (
+                      <div className="flex items-center">
+                        <Users size={16} className="mr-2 text-ocean-600" />
+                        {activity.capacity}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <Link
-                  href={`/activities/${activity.id}`}
-                  className="block w-full text-center bg-ocean-600 hover:bg-ocean-700 text-white font-semibold py-3 rounded-lg transition-colors"
-                >
-                  View Details
-                </Link>
+                {activity.bookingLink ? (
+                  <a
+                    href={activity.bookingLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center bg-ocean-600 hover:bg-ocean-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                  >
+                    Book Now
+                  </a>
+                ) : (
+                  <Link
+                    href={`/activities/${activity.id}`}
+                    className="block w-full text-center bg-ocean-600 hover:bg-ocean-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                  >
+                    View Details
+                  </Link>
+                )}
               </div>
             </motion.div>
           ))}
@@ -140,4 +210,3 @@ export function FeaturedActivities() {
     </section>
   )
 }
-
