@@ -57,10 +57,13 @@ export default function ActivitiesPage() {
   })
 
   // Filter activities client-side based on filters
-  const filteredActivities = activities.filter((activity) => {
-    // Price filter
-    if (activity.price < filters.priceRange[0] || activity.price > filters.priceRange[1]) {
-      return false
+  // IMPORTANT: Only filter if activities exist - don't filter empty arrays
+  const filteredActivities = activities.length > 0 ? activities.filter((activity) => {
+    // Price filter - only apply if price is valid (not 0 or undefined)
+    if (activity.price && activity.price > 0) {
+      if (activity.price < filters.priceRange[0] || activity.price > filters.priceRange[1]) {
+        return false
+      }
     }
     
     // Rating filter
@@ -76,7 +79,7 @@ export default function ActivitiesPage() {
     }
     
     return true
-  })
+  }) : []
 
   // Infinite scroll handler - load next 10 when near bottom
   useEffect(() => {
@@ -198,9 +201,15 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Error State */}
-            {error && (
+            {(error || (activities.length === 0 && !loading && totalCount === 0)) && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center mb-8">
-                <p className="text-red-700 mb-4">{error}</p>
+                <p className="text-red-700 mb-2 font-semibold">
+                  {error || 'Unable to load activities from Viator API'}
+                </p>
+                {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+                <p className="text-red-600 text-sm mb-4">
+                  This may be due to missing API credentials or network issues. Please try again or contact support.
+                </p>
                 <button
                   onClick={refresh}
                   className="btn-primary"
