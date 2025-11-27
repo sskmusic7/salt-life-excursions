@@ -54,7 +54,6 @@ export default function ActivitiesPage() {
     searchTerm: debouncedSearch,
     limit: 10, // Load 10 at a time
     autoLoad: true,
-    autoLoadAll: false, // Disable auto-load - only load on scroll
   })
 
   // Filter activities client-side based on filters
